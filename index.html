@@ -435,6 +435,18 @@
     }
 
     footer span { color: var(--red); }
+
+    /* Racing cars */
+    .race-car {
+      position: fixed;
+      z-index: 9999;
+      pointer-events: none;
+      width: 110px;
+      height: 48px;
+      transform-origin: center center;
+    }
+    #car1 { filter: drop-shadow(0 0 8px rgba(232,0,45,0.8)); }
+    #car2 { filter: drop-shadow(0 0 8px rgba(180,50,160,0.8)); }
   </style>
 </head>
 <body>
@@ -650,6 +662,136 @@
   <span>&copy; 2026 Andrew Chritton</span>
   <span>Lechritte.com</span>
 </footer>
+
+<!-- Car 1: Samsara, male driver, red -->
+<div id="car1" class="race-car">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 48" width="110" height="48">
+    <!-- Rear wing -->
+    <rect x="2" y="9" width="7" height="30" rx="2" fill="#1a1a1a"/>
+    <rect x="0" y="7" width="3" height="34" rx="1" fill="#333"/>
+    <!-- Body -->
+    <path d="M9,17 L68,12 Q100,12 107,24 Q100,36 68,36 L9,31 Z" fill="#e8002d"/>
+    <!-- Body shadow detail -->
+    <path d="M9,17 L50,14 L50,17 L9,17" fill="rgba(0,0,0,0.25)"/>
+    <path d="M9,31 L50,34 L50,31 L9,31" fill="rgba(0,0,0,0.25)"/>
+    <!-- Silver accent stripe -->
+    <path d="M9,23 L100,23 L100,25 L9,25" fill="rgba(255,255,255,0.15)"/>
+    <!-- Cockpit surround -->
+    <ellipse cx="50" cy="24" rx="14" ry="8" fill="#111"/>
+    <!-- Helmet: blue (male) -->
+    <circle cx="49" cy="24" r="6" fill="#1a5276"/>
+    <ellipse cx="51" cy="23" rx="3" ry="2" fill="rgba(180,220,255,0.55)"/>
+    <!-- Helmet stripe -->
+    <rect x="44" y="22" width="10" height="2" rx="1" fill="#e8002d"/>
+    <!-- Front wing -->
+    <rect x="97" y="14" width="11" height="20" rx="2" fill="#1a1a1a"/>
+    <rect x="106" y="12" width="3" height="24" rx="1" fill="#333"/>
+    <!-- Rear wheels -->
+    <rect x="13" y="2" width="20" height="13" rx="4" fill="#1a1a1a"/>
+    <rect x="13" y="33" width="20" height="13" rx="4" fill="#1a1a1a"/>
+    <!-- Front wheels -->
+    <rect x="66" y="2" width="20" height="13" rx="4" fill="#1a1a1a"/>
+    <rect x="66" y="33" width="20" height="13" rx="4" fill="#1a1a1a"/>
+    <!-- Wheel rims -->
+    <ellipse cx="23" cy="8.5" rx="4" ry="3" fill="#555"/>
+    <ellipse cx="23" cy="39.5" rx="4" ry="3" fill="#555"/>
+    <ellipse cx="76" cy="8.5" rx="4" ry="3" fill="#555"/>
+    <ellipse cx="76" cy="39.5" rx="4" ry="3" fill="#555"/>
+    <!-- Logo text -->
+    <text x="50" y="28" font-size="5" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial,sans-serif" letter-spacing="0.5">SAMSARA</text>
+  </svg>
+</div>
+
+<!-- Car 2: Angela Grace Design, female driver, mauve/rose -->
+<div id="car2" class="race-car">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 48" width="110" height="48">
+    <!-- Rear wing -->
+    <rect x="2" y="9" width="7" height="30" rx="2" fill="#1a1a1a"/>
+    <rect x="0" y="7" width="3" height="34" rx="1" fill="#333"/>
+    <!-- Body -->
+    <path d="M9,17 L68,12 Q100,12 107,24 Q100,36 68,36 L9,31 Z" fill="#8e2a7a"/>
+    <!-- Body shadow detail -->
+    <path d="M9,17 L50,14 L50,17 L9,17" fill="rgba(0,0,0,0.25)"/>
+    <path d="M9,31 L50,34 L50,31 L9,31" fill="rgba(0,0,0,0.25)"/>
+    <!-- Silver accent stripe -->
+    <path d="M9,23 L100,23 L100,25 L9,25" fill="rgba(255,255,255,0.2)"/>
+    <!-- Cockpit surround -->
+    <ellipse cx="50" cy="24" rx="14" ry="8" fill="#111"/>
+    <!-- Helmet: rose gold (female) -->
+    <circle cx="49" cy="24" r="6" fill="#c0826a"/>
+    <ellipse cx="51" cy="23" rx="3" ry="2" fill="rgba(255,220,200,0.55)"/>
+    <!-- Helmet stripe -->
+    <rect x="44" y="22" width="10" height="2" rx="1" fill="#f5c6ea"/>
+    <!-- Front wing -->
+    <rect x="97" y="14" width="11" height="20" rx="2" fill="#1a1a1a"/>
+    <rect x="106" y="12" width="3" height="24" rx="1" fill="#333"/>
+    <!-- Rear wheels -->
+    <rect x="13" y="2" width="20" height="13" rx="4" fill="#1a1a1a"/>
+    <rect x="13" y="33" width="20" height="13" rx="4" fill="#1a1a1a"/>
+    <!-- Front wheels -->
+    <rect x="66" y="2" width="20" height="13" rx="4" fill="#1a1a1a"/>
+    <rect x="66" y="33" width="20" height="13" rx="4" fill="#1a1a1a"/>
+    <!-- Wheel rims -->
+    <ellipse cx="23" cy="8.5" rx="4" ry="3" fill="#555"/>
+    <ellipse cx="23" cy="39.5" rx="4" ry="3" fill="#555"/>
+    <ellipse cx="76" cy="8.5" rx="4" ry="3" fill="#555"/>
+    <ellipse cx="76" cy="39.5" rx="4" ry="3" fill="#555"/>
+    <!-- Logo text -->
+    <text x="50" y="27" font-size="4.5" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial,sans-serif" letter-spacing="0.3">ANGELA GRACE</text>
+    <text x="50" y="32" font-size="4" fill="rgba(255,255,255,0.8)" text-anchor="middle" font-family="Arial,sans-serif" letter-spacing="0.5">DESIGN</text>
+  </svg>
+</div>
+
+<script>
+  (function () {
+    const MARGIN = 20;
+    const CAR_W = 110;
+    const CAR_H = 48;
+    const cars = [document.getElementById('car1'), document.getElementById('car2')];
+    const positions = [0, 0.52];
+    const speeds = [0.00055, 0.00048];
+
+    function update() {
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const trackW = W - 2 * MARGIN;
+      const trackH = H - 2 * MARGIN;
+      const perimeter = 2 * (trackW + trackH);
+
+      cars.forEach(function (car, i) {
+        positions[i] = (positions[i] + speeds[i]) % 1;
+        const dist = positions[i] * perimeter;
+        let x, y, angle;
+
+        if (dist <= trackW) {
+          x = MARGIN + dist;
+          y = MARGIN;
+          angle = 0;
+        } else if (dist <= trackW + trackH) {
+          x = W - MARGIN;
+          y = MARGIN + (dist - trackW);
+          angle = 90;
+        } else if (dist <= 2 * trackW + trackH) {
+          x = W - MARGIN - (dist - trackW - trackH);
+          y = H - MARGIN;
+          angle = 180;
+        } else {
+          x = MARGIN;
+          y = H - MARGIN - (dist - 2 * trackW - trackH);
+          angle = 270;
+        }
+
+        car.style.left = (x - CAR_W / 2) + 'px';
+        car.style.top  = (y - CAR_H / 2) + 'px';
+        car.style.transform = 'rotate(' + angle + 'deg)';
+      });
+
+      requestAnimationFrame(update);
+    }
+
+    requestAnimationFrame(update);
+  })();
+</script>
 
 </body>
 </html>
