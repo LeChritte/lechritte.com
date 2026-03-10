@@ -2,325 +2,643 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Andrew Chritton's MySpace</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Andrew Chritton</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Verdana&display=swap');
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --red: #e8002d;
+      --red-dark: #a80020;
+      --silver: #c0c0c0;
+      --silver-light: #e8e8e8;
+      --black: #0a0a0a;
+      --dark: #111111;
+      --dark2: #1a1a1a;
+      --dark3: #222222;
+      --white: #f5f5f5;
+    }
 
     body {
-      background-color: #000;
-      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='1' fill='%23ff00ff' opacity='0.3'/%3E%3C/svg%3E");
-      color: #fff;
-      font-family: Verdana, Geneva, sans-serif;
+      background-color: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+    }
+
+    /* Carbon fiber texture */
+    .carbon {
+      background-image:
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 2px,
+          rgba(255,255,255,0.015) 2px,
+          rgba(255,255,255,0.015) 4px
+        ),
+        repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 2px,
+          rgba(255,255,255,0.015) 2px,
+          rgba(255,255,255,0.015) 4px
+        );
+      background-color: var(--dark2);
+    }
+
+    /* Racing stripe top bar */
+    .topbar {
+      height: 6px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--red) 0px,
+        var(--red) 40px,
+        var(--white) 40px,
+        var(--white) 50px,
+        var(--black) 50px,
+        var(--black) 90px,
+        var(--white) 90px,
+        var(--white) 100px
+      );
+    }
+
+    /* Header */
+    header {
+      background: var(--dark);
+      border-bottom: 1px solid #2a2a2a;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 0;
+      width: 300px; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(232,0,45,0.08));
+      pointer-events: none;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .race-number {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--red);
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+
+    .header-name h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--white);
+      line-height: 1;
+    }
+
+    .header-name p {
+      font-size: 11px;
+      color: var(--silver);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    nav {
+      display: flex;
+      gap: 24px;
+    }
+
+    nav a {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--silver);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    nav a:hover { color: var(--red); }
+
+    /* Red stripe divider */
+    .stripe {
+      height: 3px;
+      background: linear-gradient(90deg, var(--red), var(--red-dark), transparent);
+    }
+
+    /* Main layout */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--dark2);
+      border: 1px solid #2a2a2a;
+      border-top: 3px solid var(--red);
+      margin-bottom: 20px;
+    }
+
+    .card-header {
+      padding: 10px 16px;
+      background: var(--dark3);
+      border-bottom: 1px solid #2a2a2a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-header h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--silver-light);
+    }
+
+    .card-header .dot {
+      width: 6px; height: 6px;
+      background: var(--red);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .card-body { padding: 16px; }
+
+    /* Profile photo */
+    .profile-photo {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(20%) contrast(1.1);
+    }
+
+    .profile-meta {
+      padding: 12px 16px;
+      background: var(--dark3);
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .profile-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--white);
+    }
+
+    .profile-title {
+      font-size: 11px;
+      color: var(--red);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* Stat rows */
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid #2a2a2a;
       font-size: 12px;
     }
 
-    .stars {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-    .star {
-      position: absolute;
-      width: 4px; height: 4px;
-      background: #fff;
-      border-radius: 50%;
-      animation: twinkle 2s infinite alternate;
-    }
-    @keyframes twinkle {
-      0%   { opacity: 0; transform: scale(0.5); }
-      100% { opacity: 1; transform: scale(1.2); }
-    }
+    .stat-row:last-child { border-bottom: none; }
 
-    marquee {
-      background: #ff00ff;
-      color: #ffff00;
-      font-weight: bold;
-      font-size: 13px;
-      padding: 4px 0;
-      border-top: 2px solid #00ffff;
-      border-bottom: 2px solid #00ffff;
-    }
-
-    #header {
-      text-align: center;
-      padding: 16px;
-      background: linear-gradient(180deg, #1a001a, #000);
-      border-bottom: 3px solid #ff00ff;
-      position: relative;
-      z-index: 1;
-    }
-
-    #header h1 {
-      font-size: 32px;
-      color: #ff00ff;
-      text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
-      letter-spacing: 4px;
-    }
-
-    #header p {
-      color: #00ffff;
-      font-size: 11px;
-      margin-top: 4px;
-      text-shadow: 0 0 6px #00ffff;
-    }
-
-    .blink { animation: blinker 1s step-start infinite; }
-    @keyframes blinker { 50% { opacity: 0; } }
-
-    #layout {
-      display: flex;
-      gap: 12px;
-      padding: 12px;
-      max-width: 960px;
-      margin: 0 auto;
-      position: relative;
-      z-index: 1;
-    }
-
-    #left-col { width: 240px; flex-shrink: 0; }
-    #right-col { flex: 1; }
-
-    .box {
-      border: 2px solid #ff00ff;
-      background: rgba(20, 0, 20, 0.85);
-      margin-bottom: 10px;
-    }
-
-    .box-header {
-      background: linear-gradient(90deg, #ff00ff, #9900cc);
-      color: #ffff00;
-      font-weight: bold;
-      font-size: 11px;
-      padding: 4px 8px;
+    .stat-label {
+      color: var(--silver);
       text-transform: uppercase;
       letter-spacing: 1px;
-    }
-
-    .box-content { padding: 8px; line-height: 1.6; }
-
-    #profile-pic { text-align: center; padding: 10px; }
-
-    .pic-placeholder {
-      width: 160px;
-      height: 160px;
-      background: #1a001a;
-      border: 3px solid #ff00ff;
-      box-shadow: 0 0 15px #ff00ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 64px;
-      margin: 0 auto 8px;
-    }
-
-    .username {
-      color: #ff00ff;
-      font-weight: bold;
-      font-size: 16px;
-      text-shadow: 0 0 8px #ff00ff;
-    }
-
-    .mood { color: #aaa; font-size: 10px; margin-top: 4px; }
-
-    .stat-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-    .stat-table td { padding: 3px 6px; border-bottom: 1px solid #330033; }
-    .stat-table td:first-child { color: #ff00ff; font-weight: bold; width: 50%; }
-    .stat-table td:last-child { color: #ccc; }
-
-    #about-me p { margin-bottom: 8px; color: #ddd; }
-
-    .interests-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .interest-item {
-      background: #1a001a;
-      border: 1px solid #660066;
-      padding: 4px 6px;
-      color: #ff99ff;
-      font-size: 11px;
-    }
-    .interest-item span { color: #ff00ff; font-weight: bold; }
-
-    .top8-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-    .friend-box { text-align: center; font-size: 10px; }
-    .friend-pic {
-      width: 50px; height: 50px;
-      background: #1a001a;
-      border: 2px solid #ff00ff;
-      margin: 0 auto 3px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
-    .friend-name { color: #00ffff; }
-
-    .comment { border-bottom: 1px dashed #330033; padding: 6px 0; font-size: 11px; }
-    .comment:last-child { border-bottom: none; }
-    .comment-author { color: #ff00ff; font-weight: bold; }
-    .comment-text { color: #ccc; margin-top: 2px; }
-
-    #counter {
-      text-align: center;
-      padding: 6px;
-      background: #000;
-      border: 1px solid #330033;
-      color: #00ff00;
-      font-family: 'Courier New', monospace;
-      font-size: 11px;
-    }
-
-    a { color: #00ffff; text-decoration: underline; }
-    a:hover { color: #ff00ff; }
-
-    #footer {
-      text-align: center;
-      padding: 12px;
-      color: #330033;
       font-size: 10px;
-      border-top: 2px solid #ff00ff;
-      background: #000;
-      position: relative;
-      z-index: 1;
+      font-weight: 500;
     }
 
-    .rainbow-text {
-      background: linear-gradient(90deg, #ff0000, #ff9900, #ffff00, #00ff00, #00ffff, #ff00ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: bold;
+    .stat-value { color: var(--white); font-weight: 400; }
+
+    /* Contact links */
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid #2a2a2a;
+      text-decoration: none;
+      color: var(--silver-light);
+      font-size: 12px;
+      transition: color 0.2s;
     }
+
+    .contact-link:last-child { border-bottom: none; }
+    .contact-link:hover { color: var(--red); }
+
+    .contact-link .icon {
+      width: 28px; height: 28px;
+      background: var(--dark3);
+      border: 1px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    /* About */
+    .about-text p {
+      font-size: 13px;
+      color: #ccc;
+      margin-bottom: 12px;
+      line-height: 1.7;
+    }
+
+    .about-text p:last-child { margin-bottom: 0; }
+
+    .highlight { color: var(--red); font-weight: 500; }
+
+    /* Interests grid */
+    .interests-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .interest-card {
+      background: var(--dark3);
+      border: 1px solid #2a2a2a;
+      padding: 10px 12px;
+    }
+
+    .interest-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 4px;
+    }
+
+    .interest-value {
+      font-size: 12px;
+      color: #ccc;
+    }
+
+    .interest-value a {
+      color: var(--silver-light);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .interest-value a:hover { color: var(--red); }
+
+    .sport-logos {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .sport-logos a img {
+      height: 32px;
+      width: auto;
+      filter: grayscale(30%);
+      transition: filter 0.2s, transform 0.2s;
+    }
+
+    .sport-logos a:hover img {
+      filter: grayscale(0%);
+      transform: scale(1.1);
+    }
+
+    /* Top 8 */
+    .friends-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .friend {
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .friend-img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border: 2px solid #2a2a2a;
+      display: block;
+      transition: border-color 0.2s;
+      background: var(--dark3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .friend img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border: 2px solid #2a2a2a;
+      display: block;
+      transition: border-color 0.2s, filter 0.2s;
+      filter: grayscale(20%);
+    }
+
+    .friend:hover img { border-color: var(--red); filter: grayscale(0%); }
+
+    .friend-label {
+      font-size: 10px;
+      color: var(--silver);
+      margin-top: 5px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Projects */
+    .project-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .project-item:last-child { border-bottom: none; }
+
+    .project-number {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: #2a2a2a;
+      line-height: 1;
+      flex-shrink: 0;
+      width: 32px;
+      text-align: right;
+    }
+
+    .project-info {}
+
+    .project-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+
+    .project-desc {
+      font-size: 12px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid #2a2a2a;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #444;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    footer span { color: var(--red); }
   </style>
 </head>
 <body>
 
-<div class="stars" id="stars"></div>
+<div class="topbar"></div>
 
-<marquee scrollamount="5">✨ Welcome to Andrew's page! ✨ &nbsp;&nbsp;&nbsp; 2026 will be a BIG year for Customer Success!! 🚀 &nbsp;&nbsp;&nbsp; Sr Strategic Customer Success Manager @ Samsara ✨ &nbsp;&nbsp;&nbsp; San Francisco, CA 🌉 &nbsp;&nbsp;&nbsp;</marquee>
+<header>
+  <div class="header-left">
+    <div class="race-number">01</div>
+    <div class="header-name">
+      <h1>Andrew Chritton</h1>
+      <p>San Francisco, CA &mdash; Samsara</p>
+    </div>
+  </div>
+  <nav>
+    <a href="#about">About</a>
+    <a href="#interests">Interests</a>
+    <a href="#projects">Projects</a>
+    <a href="#crew">Crew</a>
+  </nav>
+</header>
 
-<div id="header">
-  <h1>✦ Andrew Chritton ✦</h1>
-  <p class="blink">★ Sr Strategic Customer Success Manager @ Samsara ★ San Francisco, CA ★</p>
-</div>
+<div class="stripe"></div>
 
-<div id="layout">
+<div class="container">
 
   <!-- LEFT COLUMN -->
-  <div id="left-col">
+  <div>
 
-    <div class="box">
-      <div id="profile-pic">
-        <img src="/images/andrew.jpg" alt="Andrew Chritton" style="width:160px;height:160px;object-fit:cover;border:3px solid #ff00ff;box-shadow:0 0 15px #ff00ff;display:block;margin:0 auto 8px;">
-        <div class="username">andrewchritton</div>
-        <div class="mood">Mood: <span style="color:#ffff00">🚀 ambitious</span></div>
+    <div class="card" style="margin-bottom:20px;border-top:none;border:1px solid #2a2a2a;">
+      <img src="/images/andrew.jpg" alt="Andrew Chritton" class="profile-photo">
+      <div class="profile-meta">
+        <div class="profile-name">Andrew Chritton</div>
+        <div class="profile-title">Sr Strategic CSM &mdash; Samsara</div>
       </div>
     </div>
 
-    <div class="box">
-      <div class="box-header">✦ Andrew's Details</div>
-      <div class="box-content">
-        <table class="stat-table">
-          <tr><td>Title:</td><td>Sr Strategic CSM</td></tr>
-          <tr><td>Company:</td><td>Samsara</td></tr>
-          <tr><td>Location:</td><td>San Francisco, CA</td></tr>
-          <tr><td>School:</td><td>U of Arizona</td></tr>
-          <tr><td>Graduated:</td><td>2011</td></tr>
-          <tr><td>Major:</td><td>Eller College of Mgmt</td></tr>
-        </table>
+    <div class="card">
+      <div class="card-header"><div class="dot"></div><h2>Details</h2></div>
+      <div class="card-body">
+        <div class="stat-row">
+          <span class="stat-label">Location</span>
+          <span class="stat-value">San Francisco, CA</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Company</span>
+          <span class="stat-value">Samsara</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Role</span>
+          <span class="stat-value">Sr Strategic CSM</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">School</span>
+          <span class="stat-value">U of Arizona</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Graduated</span>
+          <span class="stat-value">2011</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Major</span>
+          <span class="stat-value">Eller College of Mgmt</span>
+        </div>
       </div>
     </div>
 
-    <div id="counter">
-      👁 Profile Views: <span id="count">001337</span>
-    </div>
-
-    <br>
-
-    <div class="box">
-      <div class="box-header">✦ Contact Andrew</div>
-      <div class="box-content" style="text-align:center; line-height:2">
-        <a href="https://www.linkedin.com/in/andrewchritton/" target="_blank">💼 LinkedIn</a><br>
-        <a href="https://www.facebook.com/andrew.chritton" target="_blank">📘 Facebook</a><br>
-        <a href="mailto:andrew@lechritte.com">📧 Email Me</a>
+    <div class="card">
+      <div class="card-header"><div class="dot"></div><h2>Contact</h2></div>
+      <div class="card-body">
+        <a href="https://www.linkedin.com/in/andrewchritton/" target="_blank" class="contact-link">
+          <div class="icon">💼</div> LinkedIn
+        </a>
+        <a href="https://www.facebook.com/andrew.chritton" target="_blank" class="contact-link">
+          <div class="icon">📘</div> Facebook
+        </a>
+        <a href="mailto:andrew@lechritte.com" class="contact-link">
+          <div class="icon">✉️</div> andrew@lechritte.com
+        </a>
       </div>
     </div>
 
   </div>
 
   <!-- RIGHT COLUMN -->
-  <div id="right-col">
+  <div>
 
-    <div class="box">
-      <div class="box-header">✦ About Me</div>
-      <div class="box-content" id="about-me">
+    <div class="card" id="about">
+      <div class="card-header"><div class="dot"></div><h2>About Me</h2></div>
+      <div class="card-body about-text">
         <p>
-          Hey!! 👋 I'm <span class="rainbow-text">Andrew Chritton</span> — Sr Strategic Customer Success Manager based in the greatest city on earth, <strong style="color:#ff00ff">San Francisco, CA</strong>. 🌉
+          I'm <span class="highlight">Andrew Chritton</span> — Sr Strategic Customer Success Manager at <span class="highlight">Samsara</span>, based in San Francisco, CA.
         </p>
         <p>
-          I bring a <strong style="color:#00ffff">data-driven approach</strong> to account management that helps teams hit their goals and turns customers into true champions. Building real relationships and driving outcomes is what I do best. 💪
+          I bring a data-driven approach to account management that helps teams hit their goals and turns customers into true champions. Building real relationships and driving outcomes is what I do best.
         </p>
         <p>
-          Currently crushing it at <strong style="color:#ff00ff">Samsara</strong>, where I'm helping scale an incredible Customer Success org. Buckle up — <span class="blink" style="color:#ffff00">2026 is gonna be HUGE.</span> 🚀
-        </p>
-        <p>
-          University of Arizona alum 🐻 — Go Wildcats! Eller College of Management, class of 2011.
+          Currently scaling an incredible Customer Success org at Samsara. University of Arizona alum — Eller College of Management, class of 2011. Go Wildcats.
         </p>
       </div>
     </div>
 
-    <div class="box">
-      <div class="box-header">✦ Interests</div>
-      <div class="box-content">
+    <div class="card" id="interests">
+      <div class="card-header"><div class="dot"></div><h2>Interests</h2></div>
+      <div class="card-body">
         <div class="interests-grid">
-          <div class="interest-item"><span>General:</span> Customer Success, Strategy, Tech</div>
-          <div class="interest-item"><span>Music:</span> [Add your faves!]</div>
-          <div class="interest-item"><span>Restaurants:</span> <a href="https://www.theworlds50best.com/" target="_blank">World's 50 Best</a> | <a href="https://guide.michelin.com/en/california/restaurants" target="_blank">Michelin CA</a></div>
-          <div class="interest-item"><span>Books:</span> [Add your faves!]</div>
-          <div class="interest-item"><span>Sports:</span>
-            <div style="display:flex;gap:8px;align-items:center;margin-top:4px;flex-wrap:wrap;">
-              <a href="https://www.49ers.com/schedule/" target="_blank"><img src="/images/49ers.png" alt="SF 49ers Schedule" title="SF 49ers Schedule" style="height:36px;width:auto;"></a>
-              <a href="https://www.nba.com/warriors/schedule" target="_blank"><img src="/images/warriors.png" alt="Golden State Warriors Schedule" title="Golden State Warriors Schedule" style="height:36px;width:auto;"></a>
-              <a href="https://arizonawildcats.com/sports/mens-basketball/schedule" target="_blank"><img src="/images/arizona.png" alt="Arizona Wildcats Basketball Schedule" title="Arizona Wildcats Basketball Schedule" style="height:36px;width:auto;"></a>
+          <div class="interest-card">
+            <div class="interest-label">General</div>
+            <div class="interest-value">Customer Success, Strategy, Tech</div>
+          </div>
+          <div class="interest-card">
+            <div class="interest-label">Music</div>
+            <div class="interest-value">[Add your faves]</div>
+          </div>
+          <div class="interest-card">
+            <div class="interest-label">Restaurants</div>
+            <div class="interest-value">
+              <a href="https://www.theworlds50best.com/" target="_blank">World's 50 Best</a> &nbsp;·&nbsp;
+              <a href="https://guide.michelin.com/en/california/restaurants" target="_blank">Michelin CA</a>
             </div>
           </div>
-          <div class="interest-item"><span>Heroes:</span> [Who inspires you?]</div>
+          <div class="interest-card">
+            <div class="interest-label">Books</div>
+            <div class="interest-value">[Add your faves]</div>
+          </div>
+          <div class="interest-card" style="grid-column: span 2;">
+            <div class="interest-label">Sports</div>
+            <div class="sport-logos">
+              <a href="https://www.49ers.com/schedule/" target="_blank"><img src="/images/49ers.png" alt="SF 49ers Schedule" title="SF 49ers Schedule"></a>
+              <a href="https://www.nba.com/warriors/schedule" target="_blank"><img src="/images/warriors.png" alt="Golden State Warriors Schedule" title="Golden State Warriors Schedule"></a>
+              <a href="https://arizonawildcats.com/sports/mens-basketball/schedule" target="_blank"><img src="/images/arizona.png" alt="Arizona Wildcats Basketball Schedule" title="Arizona Wildcats Basketball Schedule"></a>
+            </div>
+          </div>
+          <div class="interest-card">
+            <div class="interest-label">Heroes</div>
+            <div class="interest-value">[Who inspires you?]</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="box">
-      <div class="box-header">✦ Andrew's Top 8</div>
-      <div class="box-content">
-        <div class="top8-grid">
-          <div class="friend-box"><a href="https://www.facebook.com/kristen.bertiglia" target="_blank" style="text-decoration:none"><div class="friend-pic" style="padding:0;overflow:hidden;"><img src="/images/kristen.jpg" style="width:100%;height:100%;object-fit:cover;" alt="Kristen B."></div><div class="friend-name">Kristen B.</div></a></div>
-          <div class="friend-box"><a href="https://www.facebook.com/nick.pegan.3" target="_blank" style="text-decoration:none"><div class="friend-pic" style="padding:0;overflow:hidden;"><img src="/images/nick.jpg" style="width:100%;height:100%;object-fit:cover;" alt="Nick Pegan"></div><div class="friend-name">Nick Pegan</div></a></div>
-          <div class="friend-box"><div class="friend-pic">🌟</div><div class="friend-name">Friend 3</div></div>
-          <div class="friend-box"><div class="friend-pic">🔥</div><div class="friend-name">Friend 4</div></div>
-          <div class="friend-box"><div class="friend-pic">💫</div><div class="friend-name">Friend 5</div></div>
-          <div class="friend-box"><div class="friend-pic">🎉</div><div class="friend-name">Friend 6</div></div>
-          <div class="friend-box"><div class="friend-pic">🚀</div><div class="friend-name">Friend 7</div></div>
-          <div class="friend-box"><div class="friend-pic">✨</div><div class="friend-name">Friend 8</div></div>
+    <div class="card" id="crew">
+      <div class="card-header"><div class="dot"></div><h2>The Crew</h2></div>
+      <div class="card-body">
+        <div class="friends-grid">
+          <a href="https://www.facebook.com/kristen.bertiglia" target="_blank" class="friend">
+            <img src="/images/kristen.jpg" alt="Kristen B.">
+            <div class="friend-label">Kristen B.</div>
+          </a>
+          <a href="https://www.facebook.com/nick.pegan.3" target="_blank" class="friend">
+            <img src="/images/nick.jpg" alt="Nick Pegan">
+            <div class="friend-label">Nick Pegan</div>
+          </a>
+          <div class="friend">
+            <div class="friend-img">—</div>
+            <div class="friend-label">Add Friend</div>
+          </div>
+          <div class="friend">
+            <div class="friend-img">—</div>
+            <div class="friend-label">Add Friend</div>
+          </div>
+          <div class="friend">
+            <div class="friend-img">—</div>
+            <div class="friend-label">Add Friend</div>
+          </div>
+          <div class="friend">
+            <div class="friend-img">—</div>
+            <div class="friend-label">Add Friend</div>
+          </div>
+          <div class="friend">
+            <div class="friend-img">—</div>
+            <div class="friend-label">Add Friend</div>
+          </div>
+          <div class="friend">
+            <div class="friend-img">—</div>
+            <div class="friend-label">Add Friend</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="box">
-      <div class="box-header">✦ My Current Projects</div>
-      <div class="box-content">
-        <div class="comment">
-          <div class="comment-author" style="color:#00ffff">🚀 Project 1</div>
-          <div class="comment-text">[Project name & description coming soon]</div>
+    <div class="card" id="projects">
+      <div class="card-header"><div class="dot"></div><h2>Current Projects</h2></div>
+      <div class="card-body">
+        <div class="project-item">
+          <div class="project-number">01</div>
+          <div class="project-info">
+            <div class="project-name">Project Name</div>
+            <div class="project-desc">[Description coming soon]</div>
+          </div>
         </div>
-        <div class="comment">
-          <div class="comment-author" style="color:#00ffff">🚀 Project 2</div>
-          <div class="comment-text">[Project name & description coming soon]</div>
+        <div class="project-item">
+          <div class="project-number">02</div>
+          <div class="project-info">
+            <div class="project-name">Project Name</div>
+            <div class="project-desc">[Description coming soon]</div>
+          </div>
         </div>
-        <div class="comment">
-          <div class="comment-author" style="color:#00ffff">🚀 Project 3</div>
-          <div class="comment-text">[Project name & description coming soon]</div>
+        <div class="project-item">
+          <div class="project-number">03</div>
+          <div class="project-info">
+            <div class="project-name">Project Name</div>
+            <div class="project-desc">[Description coming soon]</div>
+          </div>
         </div>
       </div>
     </div>
@@ -328,28 +646,10 @@
   </div>
 </div>
 
-<div id="footer">
-  &copy; 2026 Andrew Chritton &mdash; <span style="color:#ff00ff">Lechritte.com</span> &mdash; Best viewed in 800x600 resolution 😂
-</div>
-
-<script>
-  const starsContainer = document.getElementById('stars');
-  for (let i = 0; i < 80; i++) {
-    const star = document.createElement('div');
-    star.classList.add('star');
-    star.style.left = Math.random() * 100 + '%';
-    star.style.top = Math.random() * 100 + '%';
-    star.style.animationDelay = Math.random() * 3 + 's';
-    star.style.animationDuration = (1.5 + Math.random() * 2) + 's';
-    star.style.background = ['#fff', '#ff00ff', '#00ffff', '#ffff00'][Math.floor(Math.random() * 4)];
-    starsContainer.appendChild(star);
-  }
-
-  let count = parseInt(localStorage.getItem('visits') || '1337');
-  count++;
-  localStorage.setItem('visits', count);
-  document.getElementById('count').textContent = count.toString().padStart(6, '0');
-</script>
+<footer>
+  <span>&copy; 2026 Andrew Chritton</span>
+  <span>Lechritte.com</span>
+</footer>
 
 </body>
 </html>
