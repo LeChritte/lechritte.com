@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Andrew Chritton's MySpace</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Verdana&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #000;
+      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='1' fill='%23ff00ff' opacity='0.3'/%3E%3C/svg%3E");
+      color: #fff;
+      font-family: Verdana, Geneva, sans-serif;
+      font-size: 12px;
+    }
+
+    .stars {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .star {
+      position: absolute;
+      width: 4px; height: 4px;
+      background: #fff;
+      border-radius: 50%;
+      animation: twinkle 2s infinite alternate;
+    }
+    @keyframes twinkle {
+      0%   { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 1; transform: scale(1.2); }
+    }
+
+    marquee {
+      background: #ff00ff;
+      color: #ffff00;
+      font-weight: bold;
+      font-size: 13px;
+      padding: 4px 0;
+      border-top: 2px solid #00ffff;
+      border-bottom: 2px solid #00ffff;
+    }
+
+    #header {
+      text-align: center;
+      padding: 16px;
+      background: linear-gradient(180deg, #1a001a, #000);
+      border-bottom: 3px solid #ff00ff;
+      position: relative;
+      z-index: 1;
+    }
+
+    #header h1 {
+      font-size: 32px;
+      color: #ff00ff;
+      text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+      letter-spacing: 4px;
+    }
+
+    #header p {
+      color: #00ffff;
+      font-size: 11px;
+      margin-top: 4px;
+      text-shadow: 0 0 6px #00ffff;
+    }
+
+    .blink { animation: blinker 1s step-start infinite; }
+    @keyframes blinker { 50% { opacity: 0; } }
+
+    #layout {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      max-width: 960px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    #left-col { width: 240px; flex-shrink: 0; }
+    #right-col { flex: 1; }
+
+    .box {
+      border: 2px solid #ff00ff;
+      background: rgba(20, 0, 20, 0.85);
+      margin-bottom: 10px;
+    }
+
+    .box-header {
+      background: linear-gradient(90deg, #ff00ff, #9900cc);
+      color: #ffff00;
+      font-weight: bold;
+      font-size: 11px;
+      padding: 4px 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .box-content { padding: 8px; line-height: 1.6; }
+
+    #profile-pic { text-align: center; padding: 10px; }
+
+    .pic-placeholder {
+      width: 160px;
+      height: 160px;
+      background: #1a001a;
+      border: 3px solid #ff00ff;
+      box-shadow: 0 0 15px #ff00ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      margin: 0 auto 8px;
+    }
+
+    .username {
+      color: #ff00ff;
+      font-weight: bold;
+      font-size: 16px;
+      text-shadow: 0 0 8px #ff00ff;
+    }
+
+    .mood { color: #aaa; font-size: 10px; margin-top: 4px; }
+
+    .stat-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .stat-table td { padding: 3px 6px; border-bottom: 1px solid #330033; }
+    .stat-table td:first-child { color: #ff00ff; font-weight: bold; width: 50%; }
+    .stat-table td:last-child { color: #ccc; }
+
+    #about-me p { margin-bottom: 8px; color: #ddd; }
+
+    .interests-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .interest-item {
+      background: #1a001a;
+      border: 1px solid #660066;
+      padding: 4px 6px;
+      color: #ff99ff;
+      font-size: 11px;
+    }
+    .interest-item span { color: #ff00ff; font-weight: bold; }
+
+    .top8-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .friend-box { text-align: center; font-size: 10px; }
+    .friend-pic {
+      width: 50px; height: 50px;
+      background: #1a001a;
+      border: 2px solid #ff00ff;
+      margin: 0 auto 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .friend-name { color: #00ffff; }
+
+    .comment { border-bottom: 1px dashed #330033; padding: 6px 0; font-size: 11px; }
+    .comment:last-child { border-bottom: none; }
+    .comment-author { color: #ff00ff; font-weight: bold; }
+    .comment-text { color: #ccc; margin-top: 2px; }
+
+    #counter {
+      text-align: center;
+      padding: 6px;
+      background: #000;
+      border: 1px solid #330033;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+    }
+
+    a { color: #00ffff; text-decoration: underline; }
+    a:hover { color: #ff00ff; }
+
+    #footer {
+      text-align: center;
+      padding: 12px;
+      color: #330033;
+      font-size: 10px;
+      border-top: 2px solid #ff00ff;
+      background: #000;
+      position: relative;
+      z-index: 1;
+    }
+
+    .rainbow-text {
+      background: linear-gradient(90deg, #ff0000, #ff9900, #ffff00, #00ff00, #00ffff, #ff00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<marquee scrollamount="5">✨ Welcome to Andrew's page! ✨ &nbsp;&nbsp;&nbsp; 2026 will be a BIG year for Customer Success!! 🚀 &nbsp;&nbsp;&nbsp; Sr Strategic Customer Success Manager @ Samsara ✨ &nbsp;&nbsp;&nbsp; San Francisco, CA 🌉 &nbsp;&nbsp;&nbsp;</marquee>
+
+<div id="header">
+  <h1>✦ Andrew Chritton ✦</h1>
+  <p class="blink">★ Sr Strategic Customer Success Manager @ Samsara ★ San Francisco, CA ★</p>
+</div>
+
+<div id="layout">
+
+  <!-- LEFT COLUMN -->
+  <div id="left-col">
+
+    <div class="box">
+      <div id="profile-pic">
+        <img src="/images/andrew.jpg" alt="Andrew Chritton" style="width:160px;height:160px;object-fit:cover;border:3px solid #ff00ff;box-shadow:0 0 15px #ff00ff;display:block;margin:0 auto 8px;">
+        <div class="username">andrewchritton</div>
+        <div class="mood">Mood: <span style="color:#ffff00">🚀 ambitious</span></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="box-header">✦ Andrew's Details</div>
+      <div class="box-content">
+        <table class="stat-table">
+          <tr><td>Title:</td><td>Sr Strategic CSM</td></tr>
+          <tr><td>Company:</td><td>Samsara</td></tr>
+          <tr><td>Location:</td><td>San Francisco, CA</td></tr>
+          <tr><td>School:</td><td>U of Arizona</td></tr>
+          <tr><td>Graduated:</td><td>2011</td></tr>
+          <tr><td>Major:</td><td>Eller College of Mgmt</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div id="counter">
+      👁 Profile Views: <span id="count">001337</span>
+    </div>
+
+    <br>
+
+    <div class="box">
+      <div class="box-header">✦ Contact Andrew</div>
+      <div class="box-content" style="text-align:center; line-height:2">
+        <a href="https://www.linkedin.com/in/andrewchritton/" target="_blank">💼 LinkedIn</a><br>
+        <a href="https://www.facebook.com/andrew.chritton" target="_blank">📘 Facebook</a><br>
+        <a href="mailto:andrew@lechritte.com">📧 Email Me</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div id="right-col">
+
+    <div class="box">
+      <div class="box-header">✦ About Me</div>
+      <div class="box-content" id="about-me">
+        <p>
+          Hey!! 👋 I'm <span class="rainbow-text">Andrew Chritton</span> — Sr Strategic Customer Success Manager based in the greatest city on earth, <strong style="color:#ff00ff">San Francisco, CA</strong>. 🌉
+        </p>
+        <p>
+          I bring a <strong style="color:#00ffff">data-driven approach</strong> to account management that helps teams hit their goals and turns customers into true champions. Building real relationships and driving outcomes is what I do best. 💪
+        </p>
+        <p>
+          Currently crushing it at <strong style="color:#ff00ff">Samsara</strong>, where I'm helping scale an incredible Customer Success org. Buckle up — <span class="blink" style="color:#ffff00">2026 is gonna be HUGE.</span> 🚀
+        </p>
+        <p>
+          University of Arizona alum 🐻 — Go Wildcats! Eller College of Management, class of 2011.
+        </p>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="box-header">✦ Interests</div>
+      <div class="box-content">
+        <div class="interests-grid">
+          <div class="interest-item"><span>General:</span> Customer Success, Strategy, Tech</div>
+          <div class="interest-item"><span>Music:</span> [Add your faves!]</div>
+          <div class="interest-item"><span>Movies:</span> [Add your faves!]</div>
+          <div class="interest-item"><span>Books:</span> [Add your faves!]</div>
+          <div class="interest-item"><span>Sports:</span> [Add your faves!]</div>
+          <div class="interest-item"><span>Heroes:</span> [Who inspires you?]</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="box-header">✦ Andrew's Top 8</div>
+      <div class="box-content">
+        <div class="top8-grid">
+          <div class="friend-box"><a href="https://www.facebook.com/kristen.bertiglia" target="_blank" style="text-decoration:none"><div class="friend-pic" style="padding:0;overflow:hidden;"><img src="/images/kristen.jpg" style="width:100%;height:100%;object-fit:cover;" alt="Kristen B."></div><div class="friend-name">Kristen B.</div></a></div>
+          <div class="friend-box"><a href="https://www.facebook.com/nick.pegan.3" target="_blank" style="text-decoration:none"><div class="friend-pic" style="padding:0;overflow:hidden;"><img src="/images/nick.jpg" style="width:100%;height:100%;object-fit:cover;" alt="Nick Pegan"></div><div class="friend-name">Nick Pegan</div></a></div>
+          <div class="friend-box"><div class="friend-pic">🌟</div><div class="friend-name">Friend 3</div></div>
+          <div class="friend-box"><div class="friend-pic">🔥</div><div class="friend-name">Friend 4</div></div>
+          <div class="friend-box"><div class="friend-pic">💫</div><div class="friend-name">Friend 5</div></div>
+          <div class="friend-box"><div class="friend-pic">🎉</div><div class="friend-name">Friend 6</div></div>
+          <div class="friend-box"><div class="friend-pic">🚀</div><div class="friend-name">Friend 7</div></div>
+          <div class="friend-box"><div class="friend-pic">✨</div><div class="friend-name">Friend 8</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="box-header">✦ Comments</div>
+      <div class="box-content">
+        <div class="comment">
+          <div class="comment-author">xX_CustomerSuccessFan_Xx</div>
+          <div class="comment-text">omg andrew ur page is SO COOL!!! 💜💜 2026 ur year fr fr</div>
+        </div>
+        <div class="comment">
+          <div class="comment-author">SamsaraFan2026</div>
+          <div class="comment-text">WILDCATS!!! 🐻 eller college represent!!</div>
+        </div>
+        <div class="comment">
+          <div class="comment-author">SFVibes415</div>
+          <div class="comment-text">san francisco is lucky to have u!! 🌉✨</div>
+        </div>
+        <div style="margin-top:8px">
+          <a href="#" style="color:#ffff00">✏️ Add Comment</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="footer">
+  &copy; 2026 Andrew Chritton &mdash; <span style="color:#ff00ff">Lechritte.com</span> &mdash; Best viewed in 800x600 resolution 😂
+</div>
+
+<script>
+  const starsContainer = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const star = document.createElement('div');
+    star.classList.add('star');
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.animationDelay = Math.random() * 3 + 's';
+    star.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+    star.style.background = ['#fff', '#ff00ff', '#00ffff', '#ffff00'][Math.floor(Math.random() * 4)];
+    starsContainer.appendChild(star);
+  }
+
+  let count = parseInt(localStorage.getItem('visits') || '1337');
+  count++;
+  localStorage.setItem('visits', count);
+  document.getElementById('count').textContent = count.toString().padStart(6, '0');
+</script>
+
+</body>
+</html>
