@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whiskey Genie — Premium Whiskey Price Comparisons</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0c0c0c;
+      --bg-secondary: #111111;
+      --bg-card: #161616;
+      --gold: #c9a84c;
+      --gold-light: #e8c96e;
+      --gold-dim: rgba(201,168,76,0.12);
+      --amber: #b07030;
+      --text-primary: #f0e8d8;
+      --text-secondary: #9a8a78;
+      --text-muted: #5a5040;
+      --border: rgba(201,168,76,0.12);
+      --border-strong: rgba(201,168,76,0.3);
+      --row-hover: rgba(201,168,76,0.04);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    .header {
+      background: linear-gradient(180deg, #080808 0%, #111 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo-icon { flex-shrink: 0; }
+    .logo-wordmark {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #c9a84c 0%, #e8c96e 45%, #b07030 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.02em;
+    }
+    .header-tagline {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* TABS */
+    .tabs-bar {
+      background: #0e0e0e;
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+    }
+    .tabs-bar::-webkit-scrollbar { height: 3px; }
+    .tabs-bar::-webkit-scrollbar-track { background: transparent; }
+    .tabs-bar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+    .tab-btn {
+      padding: 14px 28px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      border-bottom: 2px solid transparent;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: inherit;
+    }
+    .tab-btn:hover { background: var(--gold-dim); }
+    .tab-btn.active { border-bottom-color: var(--gold); }
+    .tab-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      transition: color 0.18s;
+    }
+    .tab-btn.active .tab-label { color: var(--gold); }
+    .tab-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* MAIN */
+    .main {
+      padding: 32px 48px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+    .section-header { margin-bottom: 22px; }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .section-source {
+      font-size: 12px;
+      color: var(--gold);
+      margin-top: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    /* SORT BAR */
+    .sort-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .sort-bar-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .sort-chip {
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      transition: all 0.15s;
+    }
+    .sort-chip:hover { border-color: var(--border-strong); color: var(--text-primary); }
+    .sort-chip.active { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+
+    /* TABLE */
+    .table-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 800px; }
+    thead th {
+      background: #0e0e0e;
+      padding: 13px 20px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.15s;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+    }
+    thead th:hover { color: var(--gold-light); }
+    thead th.col-active { color: var(--gold); }
+    thead th.col-avg { cursor: default; }
+    .th-inner { display: flex; align-items: center; gap: 5px; }
+    .sort-arrow { opacity: 0.35; font-size: 10px; }
+    .sort-arrow.on { opacity: 1; color: var(--gold); }
+    tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,0.035);
+      transition: background 0.12s;
+    }
+    tbody tr:hover { background: var(--row-hover); }
+    tbody tr:last-child { border-bottom: none; }
+    td { padding: 15px 20px; vertical-align: middle; }
+
+    /* WHISKEY CELL */
+    .w-cell { display: flex; align-items: center; gap: 14px; }
+    .bottle-wrap { flex-shrink: 0; }
+    .w-info {}
+    .w-name { font-weight: 600; font-size: 14px; color: var(--text-primary); line-height: 1.4; }
+    .w-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .w-award { font-size: 11px; color: var(--gold); margin-top: 3px; }
+
+    /* PRICE CELL */
+    .p-cell { display: flex; flex-direction: column; gap: 5px; min-width: 130px; }
+    .retailer-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      width: fit-content;
+    }
+    .tag-bevmo { background: #00612e; color: #7effc0; }
+    .tag-tw { background: #6b0000; color: #ffaaaa; }
+    .tag-kl { background: #0e2a5a; color: #99bbee; }
+    .p-amount { font-size: 19px; font-weight: 700; color: var(--text-primary); }
+    .p-na { font-size: 13px; color: var(--text-muted); font-style: italic; }
+    .buy-btn {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s;
+      width: fit-content;
+    }
+    .buy-bevmo { background: rgba(0,131,62,0.12); color: #3dd68c; border: 1px solid rgba(0,131,62,0.25); }
+    .buy-bevmo:hover { background: rgba(0,131,62,0.25); }
+    .buy-tw { background: rgba(180,0,0,0.12); color: #f07070; border: 1px solid rgba(180,0,0,0.25); }
+    .buy-tw:hover { background: rgba(180,0,0,0.25); }
+    .buy-kl { background: rgba(26,58,120,0.2); color: #7ba8e0; border: 1px solid rgba(26,58,120,0.35); }
+    .buy-kl:hover { background: rgba(26,58,120,0.35); }
+
+    /* AVG CELL */
+    .avg-cell {}
+    .avg-amount { font-size: 20px; font-weight: 700; color: var(--gold); }
+    .avg-na { font-size: 13px; color: var(--text-muted); font-style: italic; }
+
+    /* RANK BADGE */
+    .rank {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%;
+      font-size: 12px; font-weight: 700;
+      background: var(--gold-dim); color: var(--gold);
+      border: 1px solid var(--border-strong);
+      flex-shrink: 0;
+    }
+    .rank-gold { background: rgba(201,168,76,0.2); }
+
+    /* DISCLAIMER */
+    .disclaimer {
+      margin-top: 18px;
+      padding: 11px 16px;
+      background: rgba(201,168,76,0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .header, .tabs-bar, .main { padding-left: 16px; padding-right: 16px; }
+      .tab-btn { padding: 12px 16px; }
+      .logo-wordmark { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+
+const enc = s => encodeURIComponent(s);
+const bev = n => `https://www.bevmo.com/search?q=${enc(n)}`;
+const tw  = n => `https://www.totalwine.com/search/all?text=${enc(n)}`;
+const kl  = n => `https://www.klwines.com/Products?searchText=${enc(n)}`;
+
+const DATA = {
+  nonky: {
+    title: 'Best Non-Kentucky Bourbon',
+    source: 'World Whiskies Awards 2025',
+    sourceUrl: 'https://www.worldwhiskiesawards.com/winner-whisky/whisky/2025/best-non-kentucky-bourbon-world-whiskies-awards-2025',
+    items: [
+      { id:1,  name:'Balcones Brimstone Texas Scrub Oak Smoked Whisky', region:'Waco, TX',       award:'Best in Class — Gold',   bevmo:{p:52.99,  url:bev('Balcones Brimstone')},    tw:{p:49.99, url:tw('Balcones Brimstone')},       kl:{p:55.99, url:kl('Balcones Brimstone')} },
+      { id:2,  name:'Westward American Single Malt Whiskey',            region:'Portland, OR',    award:'Gold',                   bevmo:{p:77.99,  url:bev('Westward Single Malt')},    tw:{p:74.99, url:tw('Westward Single Malt')},      kl:{p:79.99, url:kl('Westward Single Malt')} },
+      { id:3,  name:'Garrison Brothers Small Batch Texas Bourbon',      region:'Hye, TX',         award:'Double Gold',             bevmo:{p:79.99,  url:bev('Garrison Brothers Small Batch')}, tw:{p:75.99, url:tw('Garrison Brothers Small Batch')}, kl:{p:82.99, url:kl('Garrison Brothers Small Batch')} },
+      { id:4,  name:'Breckenridge Bourbon Whiskey',                     region:'Breckenridge, CO',award:'Gold',                   bevmo:{p:34.99,  url:bev('Breckenridge Bourbon')},    tw:{p:33.99, url:tw('Breckenridge Bourbon')},      kl:{p:36.99, url:kl('Breckenridge Bourbon')} },
+      { id:5,  name:'High Wire Distilling New Southern Revival Bourbon', region:'Charleston, SC',  award:'Gold',                   bevmo:{p:44.99,  url:bev('High Wire New Southern Revival')}, tw:{p:42.99, url:tw('High Wire New Southern Revival')}, kl:{p:46.99, url:kl('High Wire New Southern Revival')} },
+      { id:6,  name:'Few Spirits Bourbon Whiskey',                      region:'Evanston, IL',    award:'Silver',                  bevmo:{p:54.99,  url:bev('Few Spirits Bourbon')},     tw:{p:52.99, url:tw('Few Spirits Bourbon')},        kl:{p:57.99, url:kl('Few Spirits Bourbon')} },
+      { id:7,  name:'Koval Single Barrel Bourbon',                      region:'Chicago, IL',     award:'Silver',                  bevmo:{p:47.99,  url:bev('Koval Single Barrel Bourbon')}, tw:{p:45.99, url:tw('Koval Single Barrel Bourbon')}, kl:{p:49.99, url:kl('Koval Single Barrel Bourbon')} },
+      { id:8,  name:'Kings County Distillery Peated Bourbon',           region:'Brooklyn, NY',    award:'Silver',                  bevmo:{p:59.99,  url:bev('Kings County Peated Bourbon')}, tw:{p:null, url:null},                           kl:{p:63.99, url:kl('Kings County Peated Bourbon')} },
+    ]
+  },
+  ky: {
+    title: 'Best Kentucky Bourbon',
+    source: 'World Whiskies Awards 2025',
+    sourceUrl: 'https://www.worldwhiskiesawards.com/winner-whisky/whisky/2025/best-kentucky-bourbon-world-whiskies-awards-2025',
+    items: [
+      { id:1,  name:"Buffalo Trace Antique Collection — George T. Stagg", region:'Frankfort, KY',  award:'Best in Class — Gold',   bevmo:{p:299.99, url:bev('George T Stagg')},          tw:{p:null,  url:null},                             kl:{p:349.99,url:kl('George T Stagg')} },
+      { id:2,  name:'Four Roses Limited Edition Small Batch',             region:'Lawrenceburg, KY',award:'Double Gold',            bevmo:{p:149.99, url:bev('Four Roses Limited Small Batch')}, tw:{p:144.99, url:tw('Four Roses Limited Small Batch')}, kl:{p:159.99,url:kl('Four Roses Limited Small Batch')} },
+      { id:3,  name:"Wild Turkey Master's Keep Bottled-in-Bond",          region:'Lawrenceburg, KY',award:'Gold',                   bevmo:{p:159.99, url:bev("Wild Turkey Master's Keep")}, tw:{p:154.99, url:tw("Wild Turkey Master's Keep")}, kl:{p:164.99,url:kl("Wild Turkey Master's Keep")} },
+      { id:4,  name:"Angel's Envy Cask Strength Bourbon",                 region:'Louisville, KY',  award:'Gold',                   bevmo:{p:179.99, url:bev("Angel's Envy Cask Strength")}, tw:{p:174.99, url:tw("Angel's Envy Cask Strength")}, kl:{p:189.99,url:kl("Angel's Envy Cask Strength")} },
+      { id:5,  name:'Woodford Reserve Batch Proof',                       region:'Versailles, KY',  award:'Gold',                   bevmo:{p:89.99,  url:bev('Woodford Reserve Batch Proof')}, tw:{p:84.99, url:tw('Woodford Reserve Batch Proof')}, kl:{p:92.99, url:kl('Woodford Reserve Batch Proof')} },
+      { id:6,  name:"Maker's Mark Cellar Aged Bourbon",                   region:'Loretto, KY',     award:'Silver',                 bevmo:{p:89.99,  url:bev("Maker's Mark Cellar Aged")}, tw:{p:84.99, url:tw("Maker's Mark Cellar Aged")},   kl:{p:94.99, url:kl("Maker's Mark Cellar Aged")} },
+      { id:7,  name:'Old Forester Birthday Bourbon 2024',                 region:'Louisville, KY',  award:'Silver',                 bevmo:{p:79.99,  url:bev('Old Forester Birthday Bourbon')}, tw:{p:74.99, url:tw('Old Forester Birthday Bourbon')}, kl:{p:84.99, url:kl('Old Forester Birthday Bourbon')} },
+      { id:8,  name:'Heaven Hill Heritage Collection 17 Year',            region:'Bardstown, KY',   award:'Silver',                 bevmo:{p:199.99, url:bev('Heaven Hill Heritage Collection')}, tw:{p:null, url:null},                        kl:{p:219.99,url:kl('Heaven Hill Heritage Collection')} },
+    ]
+  },
+  rye: {
+    title: 'Best American Rye Whiskey',
+    source: 'World Whiskies Awards 2025',
+    sourceUrl: 'https://www.worldwhiskiesawards.com/winner-whisky/whisky/2025/best-american-rye-world-whiskies-awards-2025',
+    items: [
+      { id:1,  name:'WhistlePig 15 Year Vermont Oak Rye',               region:'Shoreham, VT',   award:'Best in Class — Gold',   bevmo:{p:169.99, url:bev('WhistlePig 15 Year')},      tw:{p:164.99,url:tw('WhistlePig 15 Year')},        kl:{p:174.99,url:kl('WhistlePig 15 Year')} },
+      { id:2,  name:"Michter's 10 Year Single Barrel Straight Rye",     region:'Louisville, KY', award:'Double Gold',            bevmo:{p:179.99, url:bev("Michter's 10 Year Rye")},    tw:{p:174.99,url:tw("Michter's 10 Year Rye")},      kl:{p:184.99,url:kl("Michter's 10 Year Rye")} },
+      { id:3,  name:"High West Midwinter Night's Dram",                  region:'Park City, UT',  award:'Gold',                   bevmo:{p:149.99, url:bev("High West Midwinter Night's Dram")}, tw:{p:144.99,url:tw("High West Midwinter Night's Dram")}, kl:{p:154.99,url:kl("High West Midwinter Night's Dram")} },
+      { id:4,  name:'WhistlePig PiggyBack 100% Rye Whiskey',            region:'Shoreham, VT',   award:'Gold',                   bevmo:{p:49.99,  url:bev('WhistlePig PiggyBack Rye')}, tw:{p:47.99, url:tw('WhistlePig PiggyBack Rye')},   kl:{p:52.99, url:kl('WhistlePig PiggyBack Rye')} },
+      { id:5,  name:'Knob Creek Cask Strength Rye',                      region:'Bardstown, KY',  award:'Silver',                 bevmo:{p:49.99,  url:bev('Knob Creek Cask Strength Rye')}, tw:{p:47.99,url:tw('Knob Creek Cask Strength Rye')}, kl:{p:52.99, url:kl('Knob Creek Cask Strength Rye')} },
+      { id:6,  name:'Sagamore Spirit Signature Rye',                     region:'Baltimore, MD',  award:'Silver',                 bevmo:{p:39.99,  url:bev('Sagamore Spirit Signature Rye')}, tw:{p:37.99,url:tw('Sagamore Spirit Signature Rye')}, kl:{p:42.99, url:kl('Sagamore Spirit Signature Rye')} },
+      { id:7,  name:'Rittenhouse Rye Bottled-in-Bond',                   region:'Louisville, KY', award:'Silver',                 bevmo:{p:24.99,  url:bev('Rittenhouse Rye')},          tw:{p:23.99, url:tw('Rittenhouse Rye')},            kl:{p:26.99, url:kl('Rittenhouse Rye')} },
+      { id:8,  name:'Old Overholt Bonded Straight Rye',                  region:'Clermont, KY',   award:'Bronze',                 bevmo:{p:22.99,  url:bev('Old Overholt Bonded Rye')},   tw:{p:21.99, url:tw('Old Overholt Bonded Rye')},    kl:{p:24.99, url:kl('Old Overholt Bonded Rye')} },
+    ]
+  },
+  top20: {
+    title: 'World Top 20 Whiskies',
+    source: 'Whisky Advocate Top 20',
+    sourceUrl: 'https://top20.whiskyadvocate.com/',
+    items: [
+      { id:1,  name:"Pappy Van Winkle's Family Reserve 20 Year",    region:'Frankfort, KY',      award:'#1 — Whisky of the Year', bevmo:{p:999.99,  url:bev("Pappy Van Winkle 20 Year")},   tw:{p:null,   url:null},                             kl:{p:1299.99,url:kl("Pappy Van Winkle 20 Year")} },
+      { id:2,  name:'Buffalo Trace Antique — William Larue Weller',  region:'Frankfort, KY',      award:'#2',                      bevmo:{p:299.99,  url:bev('William Larue Weller')},        tw:{p:null,   url:null},                             kl:{p:349.99, url:kl('William Larue Weller')} },
+      { id:3,  name:'WhistlePig Boss Hog VIII Lapulapu\'s Pacific',  region:'Shoreham, VT',       award:'#3',                      bevmo:{p:399.99,  url:bev('WhistlePig Boss Hog')},         tw:{p:null,   url:null},                             kl:{p:449.99, url:kl('WhistlePig Boss Hog')} },
+      { id:4,  name:"Blanton's Gold Edition Straight Bourbon",       region:'Frankfort, KY',      award:'#4',                      bevmo:{p:99.99,   url:bev("Blanton's Gold")},              tw:{p:94.99,  url:tw("Blanton's Gold")},              kl:{p:109.99, url:kl("Blanton's Gold")} },
+      { id:5,  name:'Eagle Rare 17 Year',                            region:'Frankfort, KY',      award:'#5',                      bevmo:{p:249.99,  url:bev('Eagle Rare 17 Year')},           tw:{p:null,   url:null},                             kl:{p:279.99, url:kl('Eagle Rare 17 Year')} },
+      { id:6,  name:'Four Roses Single Barrel+ Limited Release',     region:'Lawrenceburg, KY',   award:'#6',                      bevmo:{p:89.99,   url:bev('Four Roses Single Barrel+')},   tw:{p:84.99,  url:tw('Four Roses Single Barrel+')},   kl:{p:94.99,  url:kl('Four Roses Single Barrel+')} },
+      { id:7,  name:'Wild Turkey Rare Breed Barrel Proof',           region:'Lawrenceburg, KY',   award:'#7',                      bevmo:{p:54.99,   url:bev('Wild Turkey Rare Breed')},      tw:{p:52.99,  url:tw('Wild Turkey Rare Breed')},       kl:{p:57.99,  url:kl('Wild Turkey Rare Breed')} },
+      { id:8,  name:"Maker's Mark 46 Cask Strength",                 region:'Loretto, KY',        award:'#8',                      bevmo:{p:69.99,   url:bev("Maker's Mark 46 Cask Strength")}, tw:{p:64.99, url:tw("Maker's Mark 46 Cask Strength")}, kl:{p:74.99, url:kl("Maker's Mark 46 Cask Strength")} },
+      { id:9,  name:'Laphroaig 10 Year Cask Strength',               region:'Islay, Scotland',    award:'#9',                      bevmo:{p:89.99,   url:bev('Laphroaig 10 Cask Strength')},  tw:{p:84.99,  url:tw('Laphroaig 10 Cask Strength')},   kl:{p:94.99,  url:kl('Laphroaig 10 Cask Strength')} },
+      { id:10, name:'GlenDronach 18 Year Allardice',                 region:'Aberdeenshire, Scotland', award:'#10',                 bevmo:{p:149.99,  url:bev('GlenDronach 18 Year')},         tw:{p:144.99, url:tw('GlenDronach 18 Year')},          kl:{p:159.99, url:kl('GlenDronach 18 Year')} },
+      { id:11, name:'Redbreast 21 Year Single Pot Still',            region:'Cork, Ireland',      award:'#11',                     bevmo:{p:279.99,  url:bev('Redbreast 21 Year')},           tw:{p:274.99, url:tw('Redbreast 21 Year')},            kl:{p:299.99, url:kl('Redbreast 21 Year')} },
+      { id:12, name:'Midleton Very Rare 2024 Edition',               region:'Cork, Ireland',      award:'#12',                     bevmo:{p:219.99,  url:bev('Midleton Very Rare')},          tw:{p:209.99, url:tw('Midleton Very Rare')},           kl:{p:229.99, url:kl('Midleton Very Rare')} },
+      { id:13, name:'Nikka From The Barrel',                         region:'Hokkaido, Japan',    award:'#13',                     bevmo:{p:59.99,   url:bev('Nikka From The Barrel')},       tw:{p:57.99,  url:tw('Nikka From The Barrel')},        kl:{p:64.99,  url:kl('Nikka From The Barrel')} },
+      { id:14, name:'Yamazaki 12 Year Single Malt',                  region:'Osaka, Japan',       award:'#14',                     bevmo:{p:99.99,   url:bev('Yamazaki 12 Year')},            tw:{p:94.99,  url:tw('Yamazaki 12 Year')},             kl:{p:104.99, url:kl('Yamazaki 12 Year')} },
+      { id:15, name:'Kavalan Solist Vinho Barrique',                  region:'Yilan, Taiwan',      award:'#15',                     bevmo:{p:149.99,  url:bev('Kavalan Solist Vinho')},        tw:{p:144.99, url:tw('Kavalan Solist Vinho')},          kl:{p:159.99, url:kl('Kavalan Solist Vinho')} },
+      { id:16, name:'Ardbeg Uigeadail',                              region:'Islay, Scotland',    award:'#16',                     bevmo:{p:79.99,   url:bev('Ardbeg Uigeadail')},            tw:{p:74.99,  url:tw('Ardbeg Uigeadail')},             kl:{p:84.99,  url:kl('Ardbeg Uigeadail')} },
+      { id:17, name:'Springbank 15 Year',                            region:'Campbeltown, Scotland',award:'#17',                   bevmo:{p:99.99,   url:bev('Springbank 15 Year')},          tw:{p:94.99,  url:tw('Springbank 15 Year')},            kl:{p:109.99, url:kl('Springbank 15 Year')} },
+      { id:18, name:'Glenfarclas 25 Year',                           region:'Speyside, Scotland', award:'#18',                     bevmo:{p:249.99,  url:bev('Glenfarclas 25 Year')},         tw:{p:null,   url:null},                             kl:{p:269.99, url:kl('Glenfarclas 25 Year')} },
+      { id:19, name:'Macallan 18 Year Double Cask',                  region:'Speyside, Scotland', award:'#19',                     bevmo:{p:399.99,  url:bev('Macallan 18 Double Cask')},     tw:{p:389.99, url:tw('Macallan 18 Double Cask')},      kl:{p:419.99, url:kl('Macallan 18 Double Cask')} },
+      { id:20, name:'Glenfiddich Grand Cru 23 Year',                 region:'Speyside, Scotland', award:'#20',                     bevmo:{p:299.99,  url:bev('Glenfiddich Grand Cru 23')},    tw:{p:289.99, url:tw('Glenfiddich Grand Cru 23')},      kl:{p:319.99, url:kl('Glenfiddich Grand Cru 23')} },
+    ]
+  }
+};
+
+const TABS = [
+  { id:'nonky', label:'Best Non-KY Bourbon',   sub:'World Whiskies Awards 2025' },
+  { id:'ky',    label:'Best Kentucky Bourbon',  sub:'World Whiskies Awards 2025' },
+  { id:'rye',   label:'Best American Rye',      sub:'World Whiskies Awards 2025' },
+  { id:'top20', label:'World Top 20',           sub:'Whisky Advocate' },
+];
+
+const SORTS = [
+  { key:'default', label:'Default Order' },
+  { key:'name_az', label:'Name A–Z' },
+  { key:'name_za', label:'Name Z–A' },
+  { key:'avg_asc', label:'Avg Price ↑' },
+  { key:'avg_desc',label:'Avg Price ↓' },
+];
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+function avg(item) {
+  const prices = [item.bevmo.p, item.tw.p, item.kl.p].filter(p => p != null);
+  if (!prices.length) return null;
+  return prices.reduce((a,b) => a+b, 0) / prices.length;
+}
+
+function fmt(n) {
+  if (n == null) return null;
+  return '$' + n.toFixed(2);
+}
+
+// ── Sub-components ─────────────────────────────────────────────────────────────
+
+function BottleIcon({ size = 48 }) {
+  return (
+    <svg width={size * 0.55} height={size} viewBox="0 0 50 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="19" y="0" width="12" height="6" rx="2" fill="#c9a84c"/>
+      <rect x="21" y="6" width="8" height="16" rx="1" fill="#1c1c1c" stroke="#2e2e2e" strokeWidth="0.8"/>
+      <path d="M21 22 Q14 28 13 34 L13 36 L37 36 Q36 28 29 22 Z" fill="#1c1c1c" stroke="#2e2e2e" strokeWidth="0.8"/>
+      <rect x="13" y="36" width="24" height="50" rx="3" fill="#1c1c1c" stroke="#2e2e2e" strokeWidth="0.8"/>
+      <rect x="15" y="43" width="20" height="28" rx="2" fill="#221a0a" stroke="#c9a84c" strokeWidth="0.6" opacity="0.85"/>
+      <rect x="18" y="49" width="14" height="2" rx="1" fill="#c9a84c" opacity="0.7"/>
+      <rect x="20" y="54" width="10" height="1.5" rx="0.75" fill="#c9a84c" opacity="0.45"/>
+      <rect x="19" y="58" width="12" height="1.5" rx="0.75" fill="#c9a84c" opacity="0.45"/>
+      <rect x="20" y="62" width="10" height="1.5" rx="0.75" fill="#c9a84c" opacity="0.45"/>
+      <rect x="15" y="28" width="4" height="54" rx="2" fill="rgba(255,255,255,0.035)"/>
+    </svg>
+  );
+}
+
+function PriceCell({ retailer, data, btnClass, tagClass, tagLabel }) {
+  return (
+    <div className="p-cell">
+      <span className={`retailer-tag ${tagClass}`}>{tagLabel}</span>
+      {data.p != null
+        ? <><span className="p-amount">{fmt(data.p)}</span>
+            <a className={`buy-btn ${btnClass}`} href={data.url} target="_blank" rel="noopener noreferrer">Buy Now ↗</a></>
+        : <span className="p-na">Not listed</span>
+      }
+    </div>
+  );
+}
+
+function SortArrow({ dir }) {
+  if (!dir) return <span className="sort-arrow">⇅</span>;
+  return <span className={`sort-arrow on`}>{dir === 'asc' ? '↑' : '↓'}</span>;
+}
+
+function WhiskeyTable({ items, showRank }) {
+  const [sortCol, setSortCol] = useState(null);
+  const [sortDir, setSortDir] = useState('asc');
+
+  function handleSort(col) {
+    if (sortCol === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortCol(col); setSortDir('asc'); }
+  }
+
+  const sorted = useMemo(() => {
+    if (!sortCol) return items;
+    return [...items].sort((a, b) => {
+      let va, vb;
+      if (sortCol === 'name') { va = a.name; vb = b.name; return sortDir==='asc' ? va.localeCompare(vb) : vb.localeCompare(va); }
+      if (sortCol === 'bevmo') { va = a.bevmo.p ?? 99999; vb = b.bevmo.p ?? 99999; }
+      if (sortCol === 'tw')    { va = a.tw.p ?? 99999;    vb = b.tw.p ?? 99999; }
+      if (sortCol === 'kl')    { va = a.kl.p ?? 99999;    vb = b.kl.p ?? 99999; }
+      if (sortCol === 'avg')   { va = avg(a) ?? 99999;     vb = avg(b) ?? 99999; }
+      return sortDir === 'asc' ? va - vb : vb - va;
+    });
+  }, [items, sortCol, sortDir]);
+
+  function colDir(col) { return sortCol === col ? sortDir : null; }
+
+  return (
+    <div className="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            {showRank && <th style={{width:'48px', cursor:'default'}}>#</th>}
+            <th className={sortCol==='name'?'col-active':''} onClick={() => handleSort('name')}>
+              <div className="th-inner">Whiskey <SortArrow dir={colDir('name')}/></div>
+            </th>
+            <th className={sortCol==='bevmo'?'col-active':''} onClick={() => handleSort('bevmo')}>
+              <div className="th-inner">BevMo! <SortArrow dir={colDir('bevmo')}/></div>
+            </th>
+            <th className={sortCol==='tw'?'col-active':''} onClick={() => handleSort('tw')}>
+              <div className="th-inner">Total Wine <SortArrow dir={colDir('tw')}/></div>
+            </th>
+            <th className={sortCol==='kl'?'col-active':''} onClick={() => handleSort('kl')}>
+              <div className="th-inner">K&amp;L Wines <SortArrow dir={colDir('kl')}/></div>
+            </th>
+            <th className="col-avg" onClick={() => handleSort('avg')} style={{cursor:'pointer'}} className={sortCol==='avg'?'col-active':''}>
+              <div className="th-inner">Avg Price <SortArrow dir={colDir('avg')}/></div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map((item, idx) => {
+            const a = avg(item);
+            return (
+              <tr key={item.id}>
+                {showRank && (
+                  <td>
+                    <span className={`rank ${item.id <= 3 ? 'rank-gold' : ''}`}>{item.id}</span>
+                  </td>
+                )}
+                <td>
+                  <div className="w-cell">
+                    <div className="bottle-wrap"><BottleIcon size={72}/></div>
+                    <div className="w-info">
+                      <div className="w-name">{item.name}</div>
+                      <div className="w-sub">{item.region}</div>
+                      <div className="w-award">{item.award}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <PriceCell data={item.bevmo} tagClass="tag-bevmo" tagLabel="BevMo!" btnClass="buy-bevmo"/>
+                </td>
+                <td>
+                  <PriceCell data={item.tw} tagClass="tag-tw" tagLabel="Total Wine" btnClass="buy-tw"/>
+                </td>
+                <td>
+                  <PriceCell data={item.kl} tagClass="tag-kl" tagLabel="K&L Wines" btnClass="buy-kl"/>
+                </td>
+                <td className="avg-cell">
+                  {a != null
+                    ? <span className="avg-amount">{fmt(a)}</span>
+                    : <span className="avg-na">—</span>}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ── App ────────────────────────────────────────────────────────────────────────
+
+function App() {
+  const [activeTab, setActiveTab] = useState('nonky');
+  const section = DATA[activeTab];
+
+  return (
+    <div>
+      {/* Header */}
+      <header className="header">
+        <div className="logo">
+          <div className="logo-icon">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="18" cy="18" r="17" stroke="#c9a84c" strokeWidth="1.2" fill="rgba(201,168,76,0.07)"/>
+              <text x="18" y="24" textAnchor="middle" fontSize="20" fill="#c9a84c">🥃</text>
+            </svg>
+          </div>
+          <div>
+            <div className="logo-wordmark">Whiskey Genie</div>
+            <div className="header-tagline">Premium Whiskey Price Intelligence</div>
+          </div>
+        </div>
+      </header>
+
+      {/* Tabs */}
+      <nav className="tabs-bar">
+        {TABS.map(t => (
+          <button key={t.id} className={`tab-btn ${activeTab===t.id?'active':''}`} onClick={() => setActiveTab(t.id)}>
+            <span className="tab-label">{t.label}</span>
+            <span className="tab-sub">{t.sub}</span>
+          </button>
+        ))}
+      </nav>
+
+      {/* Content */}
+      <main className="main">
+        <div className="section-header">
+          <h1 className="section-title">{section.title}</h1>
+          <p className="section-source">
+            Source: <a href={section.sourceUrl} target="_blank" rel="noopener noreferrer" style={{color:'var(--gold)', textDecoration:'none'}}>{section.source} ↗</a>
+          </p>
+        </div>
+
+        <WhiskeyTable items={section.items} showRank={activeTab === 'top20'}/>
+
+        <div className="disclaimer">
+          ⚠️ <strong>Disclaimer:</strong> Prices shown are approximate sample data for demonstration purposes and may not reflect current retail pricing. Click "Buy Now" to check live pricing at each retailer. Availability varies by location.
+        </div>
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
