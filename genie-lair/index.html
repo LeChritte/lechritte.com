@@ -1248,13 +1248,14 @@ function drawMSScene(ctx, s) {
 
   // Trajectory guide when charging
   if (s.charging && !s.ball) {
-    const pwr = Math.max(0.15, s.power);
-    const vy0 = -(8 + pwr * 10);
-    const dy = MS_HOOP_Y - (MS_GENIE_Y - 20);
-    const disc = vy0*vy0 + 4 * (0.5*MS_GRAVITY) * dy;
+    const pwr = s.power;
+    const vy0 = -(14 + pwr * 8);
+    const sy0 = MS_GENIE_Y - 20;
+    const a = 0.5 * MS_GRAVITY;
+    const disc = vy0*vy0 - 4*a*(sy0 - MS_HOOP_Y);
     let vx0 = 0;
     if (disc >= 0) {
-      const t = Math.max((-vy0 + Math.sqrt(disc)) / MS_GRAVITY, (-vy0 - Math.sqrt(disc)) / MS_GRAVITY);
+      const t = Math.max((-vy0 + Math.sqrt(disc)) / (2*a), (-vy0 - Math.sqrt(disc)) / (2*a));
       vx0 = t > 0 ? (s.hoopX - MS_GENIE_X) / t : 0;
     }
     ctx.fillStyle = 'rgba(201,168,76,0.2)';
@@ -1308,6 +1309,7 @@ function MoonShotGame({ level, onComplete }) {
   const [uiTime,     setUiTime]     = useState(MS_TIME);
   const [status,     setStatus]     = useState('idle');
   const [completion, setCompletion] = useState(null);
+  const statusRef = useRef('idle');
 
   function initState() {
     return {
@@ -1317,28 +1319,36 @@ function MoonShotGame({ level, onComplete }) {
     };
   }
 
+  // vy = -(14 + pwr*8) ensures ball always reaches hoop at any power level
+  function calcVy(pwr) { return -(14 + pwr * 8); }
+
   function shootBall(s) {
     if (!s || !s.charging || s.ball) return;
     s.charging = false;
-    const pwr = Math.max(0.15, s.power);
+    const pwr = Math.max(0, s.power);
     s.power = 0;
     const sx = MS_GENIE_X, sy = MS_GENIE_Y - 20;
-    const vy = -(8 + pwr * 10);
-    const dy = MS_HOOP_Y - sy;
-    const disc = vy*vy + 4 * (0.5*MS_GRAVITY) * dy;
+    const vy = calcVy(pwr);
+    const dy = MS_HOOP_Y - sy; // negative (hoop above genie)
+    // 0.5g*t² + vy*t - dy = 0  →  disc = vy² - 4*(0.5g)*(−dy) = vy² + 2g*dy... but dy<0 so vy² - 2g*|dy|
+    // rewrite: discriminant of (0.5g)t² + vy*t + (sy-hoopY) = 0
+    const a = 0.5 * MS_GRAVITY;
+    const disc = vy*vy - 4*a*(sy - MS_HOOP_Y);
     let vx = 0;
     if (disc >= 0) {
-      const t = Math.max((-vy + Math.sqrt(disc)) / MS_GRAVITY, (-vy - Math.sqrt(disc)) / MS_GRAVITY);
-      vx = t > 0 ? (s.hoopX - sx) / t : 0;
+      const t1 = (-vy + Math.sqrt(disc)) / (2*a);
+      const t2 = (-vy - Math.sqrt(disc)) / (2*a);
+      const t = Math.max(t1, t2);
+      if (t > 0) vx = (s.hoopX - sx) / t;
     }
     s.ball = { x:sx, y:sy, vx, vy, scored:false };
   }
 
-  // Game loop
+  // Game loop — canvas is always mounted, so this effect always gets a real canvas
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
     const ctx = canvas.getContext('2d');
+
     function loop(ts) {
       animRef.current = requestAnimationFrame(loop);
       const s = stateRef.current;
@@ -1347,7 +1357,9 @@ function MoonShotGame({ level, onComplete }) {
         const newTime = Math.max(0, MS_TIME - Math.floor((ts - s.timerStart) / 1000));
         if (newTime !== s.timeLeft) {
           s.timeLeft = newTime; setUiTime(newTime);
-          if (newTime <= 0) { s.status = 'lost'; setStatus('lost'); }
+          if (newTime <= 0) {
+            s.status = 'lost'; statusRef.current = 'lost'; setStatus('lost');
+          }
         }
         s.hoopPhase += s.hoopSpeed;
         s.hoopX = MS_CW/2 + Math.sin(s.hoopPhase) * MS_HOOP_AMP;
@@ -1355,13 +1367,13 @@ function MoonShotGame({ level, onComplete }) {
         if (s.ball) {
           s.ball.x += s.ball.vx; s.ball.y += s.ball.vy; s.ball.vy += MS_GRAVITY;
           if (!s.ball.scored && s.ball.vy > 0 &&
-              s.ball.y >= MS_HOOP_Y - 8 && s.ball.y <= MS_HOOP_Y + 16 &&
-              s.ball.x >= s.hoopX - MS_HOOP_W/2 + 4 && s.ball.x <= s.hoopX + MS_HOOP_W/2 - 4) {
+              s.ball.y >= MS_HOOP_Y - 8 && s.ball.y <= MS_HOOP_Y + 18 &&
+              s.ball.x >= s.hoopX - MS_HOOP_W/2 + 5 && s.ball.x <= s.hoopX + MS_HOOP_W/2 - 5) {
             s.score += 2; s.ball.scored = true;
             s.scoreFlash = 40; s.scoreFlashX = s.hoopX;
             setUiScore(s.score);
             if (s.score >= MS_WIN) {
-              s.status = 'won'; setStatus('won');
+              s.status = 'won'; statusRef.current = 'won'; setStatus('won');
               const lbl = `${s.score} pts — all wishes granted!`;
               onCplRef.current(3, lbl);
               setTimeout(() => setCompletion({ stars:3, scoreLabel:lbl }), 400);
@@ -1377,11 +1389,12 @@ function MoonShotGame({ level, onComplete }) {
     return () => cancelAnimationFrame(animRef.current);
   }, []);
 
-  // Keyboard controls
+  // Keyboard: space charges/shoots; also starts game from idle
   useEffect(() => {
     function onDown(e) {
       if (e.code !== 'Space') return;
       e.preventDefault();
+      if (statusRef.current === 'idle') { startGame(); return; }
       const s = stateRef.current;
       if (!s || s.status !== 'playing' || s.ball || s.charging) return;
       s.charging = true;
@@ -1397,30 +1410,27 @@ function MoonShotGame({ level, onComplete }) {
 
   function startGame() {
     stateRef.current = initState();
+    statusRef.current = 'playing';
     setUiScore(0); setUiTime(MS_TIME); setStatus('playing'); setCompletion(null);
   }
-  function restart() { setCompletion(null); setStatus('idle'); stateRef.current = null; }
+  function restart() {
+    stateRef.current = null;
+    statusRef.current = 'idle';
+    setCompletion(null); setStatus('idle');
+  }
 
   const onPressStart = () => {
+    if (statusRef.current === 'idle') { startGame(); return; }
     const s = stateRef.current;
     if (!s || s.status !== 'playing' || s.ball || s.charging) return;
     s.charging = true;
   };
-  const onPressEnd = () => shootBall(stateRef.current);
+  const onPressEnd = () => {
+    if (statusRef.current !== 'playing') return;
+    shootBall(stateRef.current);
+  };
 
-  if (status === 'idle') return (
-    <div className="game-wrap">
-      <div style={{fontSize:52, marginBottom:14, filter:'drop-shadow(0 0 14px rgba(232,208,144,0.6))'}}>🌙</div>
-      <h2 className="game-title">Moon Shot</h2>
-      <p className="game-desc">
-        The Genie launches moon orbs through a moving golden hoop!<br/>
-        Hold <strong style={{color:'var(--gold)'}}>SPACE</strong> to charge your shot, release to launch.<br/>
-        Score <strong style={{color:'var(--gold)'}}>30 points</strong> in 120 seconds. Each basket = 2 pts.
-      </p>
-      <button className="game-btn" onClick={startGame}>🪔 Begin the Trial</button>
-    </div>
-  );
-
+  // Always render canvas (so useEffect gets a real ref on mount)
   return (
     <>
       <div className="game-wrap" style={{maxWidth: MS_CW + 48, padding:'24px 20px'}}>
@@ -1435,8 +1445,23 @@ function MoonShotGame({ level, onComplete }) {
             <div className="snake-stat-label">Time Left</div>
           </div>
         </div>
+
         <div style={{position:'relative', textAlign:'center'}}>
           <canvas ref={canvasRef} width={MS_CW} height={MS_CH} className="snake-canvas" style={{maxWidth:'100%'}} />
+
+          {status === 'idle' && (
+            <div className="snake-overlay">
+              <div style={{fontSize:52, filter:'drop-shadow(0 0 14px rgba(232,208,144,0.6))'}}>🌙</div>
+              <div className="snake-overlay-title" style={{fontSize:18}}>Moon Shot</div>
+              <div style={{fontSize:12, color:'var(--text2)', textAlign:'center', lineHeight:1.6, maxWidth:260}}>
+                Time the moving hoop and launch moon orbs!<br/>
+                <strong style={{color:'var(--gold)'}}>Hold SPACE</strong> to charge · release to shoot<br/>
+                Score 30 pts in 120s · 2 pts per basket
+              </div>
+              <button className="game-btn" onClick={startGame}>🪔 Begin the Trial</button>
+            </div>
+          )}
+
           {status === 'lost' && (
             <div className="snake-overlay">
               <div style={{fontSize:44}}>⏰</div>
@@ -1446,6 +1471,7 @@ function MoonShotGame({ level, onComplete }) {
             </div>
           )}
         </div>
+
         <div style={{marginTop:14, display:'flex', justifyContent:'center'}}>
           <button
             className="game-btn"
@@ -1456,11 +1482,11 @@ function MoonShotGame({ level, onComplete }) {
             onTouchStart={e => { e.preventDefault(); onPressStart(); }}
             onTouchEnd={e => { e.preventDefault(); onPressEnd(); }}
           >
-            Hold to Charge · Release to Shoot 🌙
+            {status === 'idle' ? '🪔 Begin the Trial' : 'Hold to Charge · Release to Shoot 🌙'}
           </button>
         </div>
         <p style={{fontSize:11, color:'var(--text3)', marginTop:6, textAlign:'center'}}>
-          Keyboard: Hold <strong>SPACE</strong> to charge, release to shoot · Time the moving hoop!
+          Keyboard: <strong>SPACE</strong> to start · hold to charge · release to shoot
         </p>
       </div>
       {completion && (
