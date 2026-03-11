@@ -526,7 +526,7 @@ const getColor = id => ACCENT_COLORS[(id - 1) % ACCENT_COLORS.length];
 
 const LEVELS = [
   { id:1,  emoji:'🧞', title:'Magic Carpet Snake', desc:"Guide the Genie's magic carpet to eat ✨ stars. Don't hit the walls or your own carpet!", game:'snake' },
-  { id:2,  emoji:'🔢', title:'Quick Math',       desc:'Solve 10 arithmetic problems before time runs out.',                  game:'quickmath'  },
+  { id:2,  emoji:'🌙', title:'Moon Shot',          desc:'Charge your shot and time the moving hoop. Score 30 pts in 120s — 2 pts per basket!', game:'moonshot'   },
   { id:3,  emoji:'🃏', title:'Memory Cards',     desc:'Flip cards to find all matching pairs.',                              game:'memory'     },
   { id:4,  emoji:'🎨', title:'Color Match',      desc:'Click the word that matches the ink color, not the text.',            game:'placeholder'},
   { id:5,  emoji:'🔤', title:'Word Scramble',    desc:'Rearrange the letters to reveal the hidden word.',                    game:'placeholder'},
@@ -1191,11 +1191,291 @@ function MemoryGame({ level, onComplete }) {
   );
 }
 
+// ── GAME: Moon Shot ───────────────────────────────────────────────────────────
+
+const MS_CW = 480, MS_CH = 360;
+const MS_GENIE_X = MS_CW / 2, MS_GENIE_Y = MS_CH - 44;
+const MS_HOOP_Y = 72, MS_HOOP_W = 54, MS_HOOP_AMP = 155;
+const MS_WIN = 30, MS_TIME = 120, MS_GRAVITY = 0.38;
+
+function drawMoonBall(ctx, x, y, r) {
+  ctx.save();
+  ctx.shadowColor = 'rgba(232,208,144,0.9)'; ctx.shadowBlur = 16;
+  ctx.fillStyle = '#e8d090';
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+  // Crescent cutout using dark circle
+  ctx.fillStyle = '#07050f';
+  ctx.beginPath(); ctx.arc(x + r*0.38, y - r*0.18, r*0.78, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+function drawMSHoop(ctx, x, y) {
+  const hw = MS_HOOP_W / 2;
+  // Backboard
+  ctx.fillStyle = 'rgba(201,168,76,0.1)';
+  rrect(ctx, x - hw - 10, y - 32, MS_HOOP_W + 20, 26, 4); ctx.fill();
+  ctx.strokeStyle = 'rgba(201,168,76,0.28)'; ctx.lineWidth = 1;
+  rrect(ctx, x - hw - 10, y - 32, MS_HOOP_W + 20, 26, 4); ctx.stroke();
+  // Support pole
+  ctx.strokeStyle = 'rgba(201,168,76,0.4)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x, y - 32); ctx.lineTo(x, y - 50); ctx.stroke();
+  // Rim with glow
+  ctx.save();
+  ctx.shadowColor = '#e8c96e'; ctx.shadowBlur = 10;
+  ctx.strokeStyle = '#c9a84c'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(x - hw, y); ctx.lineTo(x + hw, y); ctx.stroke();
+  ctx.restore();
+  // Net lines
+  ctx.strokeStyle = 'rgba(201,168,76,0.28)'; ctx.lineWidth = 1;
+  for (let i = 0; i <= 5; i++) {
+    const nx = x - hw + (MS_HOOP_W / 5) * i;
+    ctx.beginPath(); ctx.moveTo(nx, y); ctx.lineTo(nx + (i - 2.5) * 1.4, y + 24); ctx.stroke();
+  }
+  ctx.beginPath(); ctx.moveTo(x - hw + 3, y + 12); ctx.lineTo(x + hw - 3, y + 12); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x - hw + 7, y + 24); ctx.lineTo(x + hw - 7, y + 24); ctx.stroke();
+}
+
+function drawMSScene(ctx, s) {
+  ctx.fillStyle = '#07050f'; ctx.fillRect(0, 0, MS_CW, MS_CH);
+  // Background stars
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  [[48,28],[120,14],[200,38],[310,20],[400,33],[60,78],[160,62],[260,52],[380,68],[440,42],
+   [90,108],[230,92],[350,102],[420,118],[30,128],[140,44],[470,88],[5,55],[340,148],[200,130]
+  ].forEach(([sx,sy]) => { ctx.beginPath(); ctx.arc(sx, sy, 0.8, 0, Math.PI*2); ctx.fill(); });
+
+  if (!s) return;
+
+  // Trajectory guide when charging
+  if (s.charging && !s.ball) {
+    const pwr = Math.max(0.15, s.power);
+    const vy0 = -(8 + pwr * 10);
+    const dy = MS_HOOP_Y - (MS_GENIE_Y - 20);
+    const disc = vy0*vy0 + 4 * (0.5*MS_GRAVITY) * dy;
+    let vx0 = 0;
+    if (disc >= 0) {
+      const t = Math.max((-vy0 + Math.sqrt(disc)) / MS_GRAVITY, (-vy0 - Math.sqrt(disc)) / MS_GRAVITY);
+      vx0 = t > 0 ? (s.hoopX - MS_GENIE_X) / t : 0;
+    }
+    ctx.fillStyle = 'rgba(201,168,76,0.2)';
+    let bx = MS_GENIE_X, by = MS_GENIE_Y - 20, bvx = vx0, bvy = vy0;
+    for (let i = 0; i < 55; i++) {
+      bx += bvx; by += bvy; bvy += MS_GRAVITY;
+      if (i % 3 === 0 && by < MS_CH) { ctx.beginPath(); ctx.arc(bx, by, 2, 0, Math.PI*2); ctx.fill(); }
+      if (by > MS_CH) break;
+    }
+  }
+
+  drawMSHoop(ctx, s.hoopX, MS_HOOP_Y);
+
+  // Power meter
+  if (s.charging || s.power > 0) {
+    const bx=18, by=MS_CH-145, bw=12, bh=100;
+    ctx.fillStyle='rgba(255,255,255,0.05)'; rrect(ctx,bx,by,bw,bh,4); ctx.fill();
+    if (s.power > 0) {
+      ctx.fillStyle = s.power>0.8?'#ef4444':s.power>0.5?'#f59e0b':'#c9a84c';
+      const fh = bh * s.power; rrect(ctx,bx,by+bh-fh,bw,fh,4); ctx.fill();
+    }
+    ctx.font='8px Inter,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.3)';
+    ctx.fillText('PWR', bx+bw/2, by-5);
+  }
+
+  if (s.ball) drawMoonBall(ctx, s.ball.x, s.ball.y, 10);
+
+  // Genie shooter
+  ctx.save(); ctx.shadowColor='rgba(201,168,76,0.5)'; ctx.shadowBlur=10;
+  ctx.font='28px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('🧞', MS_GENIE_X, MS_GENIE_Y);
+  ctx.restore();
+
+  // +2 flash
+  if (s.scoreFlash > 0) {
+    ctx.globalAlpha = Math.min(1, s.scoreFlash / 18);
+    ctx.font='bold 28px Inter,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#4ade80';
+    ctx.fillText('+2', s.scoreFlashX, MS_HOOP_Y - 28);
+    ctx.globalAlpha = 1;
+  }
+}
+
+function MoonShotGame({ level, onComplete }) {
+  const canvasRef = useRef(null);
+  const stateRef  = useRef(null);
+  const animRef   = useRef(null);
+  const onCplRef  = useRef(onComplete);
+  useEffect(() => { onCplRef.current = onComplete; });
+
+  const [uiScore,    setUiScore]    = useState(0);
+  const [uiTime,     setUiTime]     = useState(MS_TIME);
+  const [status,     setStatus]     = useState('idle');
+  const [completion, setCompletion] = useState(null);
+
+  function initState() {
+    return {
+      score:0, timeLeft:MS_TIME, hoopX:MS_CW/2, hoopPhase:0, hoopSpeed:0.022,
+      ball:null, power:0, charging:false, timerStart:null,
+      scoreFlash:0, scoreFlashX:MS_CW/2, status:'playing',
+    };
+  }
+
+  function shootBall(s) {
+    if (!s || !s.charging || s.ball) return;
+    s.charging = false;
+    const pwr = Math.max(0.15, s.power);
+    s.power = 0;
+    const sx = MS_GENIE_X, sy = MS_GENIE_Y - 20;
+    const vy = -(8 + pwr * 10);
+    const dy = MS_HOOP_Y - sy;
+    const disc = vy*vy + 4 * (0.5*MS_GRAVITY) * dy;
+    let vx = 0;
+    if (disc >= 0) {
+      const t = Math.max((-vy + Math.sqrt(disc)) / MS_GRAVITY, (-vy - Math.sqrt(disc)) / MS_GRAVITY);
+      vx = t > 0 ? (s.hoopX - sx) / t : 0;
+    }
+    s.ball = { x:sx, y:sy, vx, vy, scored:false };
+  }
+
+  // Game loop
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function loop(ts) {
+      animRef.current = requestAnimationFrame(loop);
+      const s = stateRef.current;
+      if (s && s.status === 'playing') {
+        if (!s.timerStart) s.timerStart = ts;
+        const newTime = Math.max(0, MS_TIME - Math.floor((ts - s.timerStart) / 1000));
+        if (newTime !== s.timeLeft) {
+          s.timeLeft = newTime; setUiTime(newTime);
+          if (newTime <= 0) { s.status = 'lost'; setStatus('lost'); }
+        }
+        s.hoopPhase += s.hoopSpeed;
+        s.hoopX = MS_CW/2 + Math.sin(s.hoopPhase) * MS_HOOP_AMP;
+        if (s.charging) s.power = Math.min(1, s.power + 0.016);
+        if (s.ball) {
+          s.ball.x += s.ball.vx; s.ball.y += s.ball.vy; s.ball.vy += MS_GRAVITY;
+          if (!s.ball.scored && s.ball.vy > 0 &&
+              s.ball.y >= MS_HOOP_Y - 8 && s.ball.y <= MS_HOOP_Y + 16 &&
+              s.ball.x >= s.hoopX - MS_HOOP_W/2 + 4 && s.ball.x <= s.hoopX + MS_HOOP_W/2 - 4) {
+            s.score += 2; s.ball.scored = true;
+            s.scoreFlash = 40; s.scoreFlashX = s.hoopX;
+            setUiScore(s.score);
+            if (s.score >= MS_WIN) {
+              s.status = 'won'; setStatus('won');
+              const lbl = `${s.score} pts — all wishes granted!`;
+              onCplRef.current(3, lbl);
+              setTimeout(() => setCompletion({ stars:3, scoreLabel:lbl }), 400);
+            }
+          }
+          if (s.ball.y > MS_CH+30 || s.ball.x < -30 || s.ball.x > MS_CW+30) s.ball = null;
+        }
+        if (s.scoreFlash > 0) s.scoreFlash--;
+      }
+      drawMSScene(ctx, s);
+    }
+    animRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(animRef.current);
+  }, []);
+
+  // Keyboard controls
+  useEffect(() => {
+    function onDown(e) {
+      if (e.code !== 'Space') return;
+      e.preventDefault();
+      const s = stateRef.current;
+      if (!s || s.status !== 'playing' || s.ball || s.charging) return;
+      s.charging = true;
+    }
+    function onUp(e) {
+      if (e.code !== 'Space') return;
+      shootBall(stateRef.current);
+    }
+    window.addEventListener('keydown', onDown);
+    window.addEventListener('keyup', onUp);
+    return () => { window.removeEventListener('keydown', onDown); window.removeEventListener('keyup', onUp); };
+  }, []);
+
+  function startGame() {
+    stateRef.current = initState();
+    setUiScore(0); setUiTime(MS_TIME); setStatus('playing'); setCompletion(null);
+  }
+  function restart() { setCompletion(null); setStatus('idle'); stateRef.current = null; }
+
+  const onPressStart = () => {
+    const s = stateRef.current;
+    if (!s || s.status !== 'playing' || s.ball || s.charging) return;
+    s.charging = true;
+  };
+  const onPressEnd = () => shootBall(stateRef.current);
+
+  if (status === 'idle') return (
+    <div className="game-wrap">
+      <div style={{fontSize:52, marginBottom:14, filter:'drop-shadow(0 0 14px rgba(232,208,144,0.6))'}}>🌙</div>
+      <h2 className="game-title">Moon Shot</h2>
+      <p className="game-desc">
+        The Genie launches moon orbs through a moving golden hoop!<br/>
+        Hold <strong style={{color:'var(--gold)'}}>SPACE</strong> to charge your shot, release to launch.<br/>
+        Score <strong style={{color:'var(--gold)'}}>30 points</strong> in 120 seconds. Each basket = 2 pts.
+      </p>
+      <button className="game-btn" onClick={startGame}>🪔 Begin the Trial</button>
+    </div>
+  );
+
+  return (
+    <>
+      <div className="game-wrap" style={{maxWidth: MS_CW + 48, padding:'24px 20px'}}>
+        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10}}>
+          <div className="snake-stat">
+            <div className="snake-stat-val">{uiScore} / {MS_WIN}</div>
+            <div className="snake-stat-label">Points</div>
+          </div>
+          <div style={{fontFamily:"'Cinzel',serif", fontSize:14, fontWeight:700, color:'var(--gold-light)'}}>🌙 Moon Shot</div>
+          <div className="snake-stat" style={{textAlign:'right'}}>
+            <div className="snake-stat-val" style={{color: uiTime<=10 ? '#ef4444' : 'var(--gold-light)'}}>{uiTime}s</div>
+            <div className="snake-stat-label">Time Left</div>
+          </div>
+        </div>
+        <div style={{position:'relative', textAlign:'center'}}>
+          <canvas ref={canvasRef} width={MS_CW} height={MS_CH} className="snake-canvas" style={{maxWidth:'100%'}} />
+          {status === 'lost' && (
+            <div className="snake-overlay">
+              <div style={{fontSize:44}}>⏰</div>
+              <div className="snake-overlay-title">Time's Up, Master!</div>
+              <div style={{fontSize:13, color:'var(--text2)'}}>{uiScore} / {MS_WIN} points scored</div>
+              <button className="game-btn" onClick={startGame}>Try Again</button>
+            </div>
+          )}
+        </div>
+        <div style={{marginTop:14, display:'flex', justifyContent:'center'}}>
+          <button
+            className="game-btn"
+            style={{padding:'12px 36px', userSelect:'none', touchAction:'none'}}
+            onMouseDown={onPressStart}
+            onMouseUp={onPressEnd}
+            onMouseLeave={onPressEnd}
+            onTouchStart={e => { e.preventDefault(); onPressStart(); }}
+            onTouchEnd={e => { e.preventDefault(); onPressEnd(); }}
+          >
+            Hold to Charge · Release to Shoot 🌙
+          </button>
+        </div>
+        <p style={{fontSize:11, color:'var(--text3)', marginTop:6, textAlign:'center'}}>
+          Keyboard: Hold <strong>SPACE</strong> to charge, release to shoot · Time the moving hoop!
+        </p>
+      </div>
+      {completion && (
+        <CompletionModal levelId={level.id} stars={completion.stars} scoreLabel={completion.scoreLabel} onClose={restart} />
+      )}
+    </>
+  );
+}
+
 // ── Registry ──────────────────────────────────────────────────────────────────
 
 const REGISTRY = {
   placeholder: PlaceholderGame,
   snake:       SnakeGame,
+  moonshot:    MoonShotGame,
   quickmath:   QuickMathGame,
   memory:      MemoryGame,
 };
