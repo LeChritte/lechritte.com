@@ -739,7 +739,7 @@ function PlaceholderGame({ level, onComplete }) {
 
 // ── GAME: Magic Carpet Snake ──────────────────────────────────────────────────
 
-const GRID = 20, CELL = 16, CSIZE = GRID * CELL; // 320px
+const GRID = 20, CELL = 16, CSIZE = GRID * CELL, WIN_SCORE = 25;
 
 function rrect(ctx, x, y, w, h, r) {
   ctx.beginPath();
@@ -748,6 +748,18 @@ function rrect(ctx, x, y, w, h, r) {
   ctx.arcTo(x+w, y+h, x, y+h, r);
   ctx.arcTo(x, y+h, x, y, r);
   ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+}
+
+function drawGoldStar(ctx, cx, cy, r) {
+  const inner = r * 0.42, pts = 5;
+  ctx.beginPath();
+  for (let i = 0; i < pts * 2; i++) {
+    const angle = (i * Math.PI / pts) - Math.PI / 2;
+    const rad = i % 2 === 0 ? r : inner;
+    const x = cx + Math.cos(angle) * rad, y = cy + Math.sin(angle) * rad;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
   ctx.closePath();
 }
 
@@ -771,14 +783,18 @@ function drawSnake(ctx, g) {
 
   if (!g) return;
 
-  // Food glow
+  // Food — drawn gold star
+  const fcx = g.food.x*CELL + CELL/2, fcy = g.food.y*CELL + CELL/2;
   ctx.save();
-  ctx.shadowColor = '#c9a84c';
-  ctx.shadowBlur = 10;
-  ctx.font = `${CELL-1}px serif`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('✨', g.food.x*CELL + CELL/2, g.food.y*CELL + CELL/2);
+  ctx.shadowColor = '#e8c96e';
+  ctx.shadowBlur = 16;
+  const fgrad = ctx.createRadialGradient(fcx, fcy, 0, fcx, fcy, CELL*0.46);
+  fgrad.addColorStop(0, '#fffbe6');
+  fgrad.addColorStop(0.4, '#e8c96e');
+  fgrad.addColorStop(1, '#c9a84c');
+  ctx.fillStyle = fgrad;
+  drawGoldStar(ctx, fcx, fcy, CELL * 0.46);
+  ctx.fill();
   ctx.restore();
 
   // Carpet body (tail → neck, so head renders on top)
@@ -871,6 +887,7 @@ function SnakeGame({ level, onComplete }) {
       g.food = randomFood(g.snake);
       setScore(g.score);
       setLength(g.snake.length);
+      if (g.score >= WIN_SCORE) { g.status = 'won'; handleWin(); return; }
     } else {
       g.snake.pop();
     }
@@ -879,10 +896,15 @@ function SnakeGame({ level, onComplete }) {
   function handleGameOver(s) {
     cancelAnimationFrame(animRef.current);
     setStatus('dead');
-    const stars = s >= 12 ? 3 : s >= 5 ? 2 : 1;
-    const scoreLabel = `Ate ${s} magic star${s!==1?'s':''}`;
-    onComplete(stars, scoreLabel);
-    setTimeout(() => setCompletion({ stars, scoreLabel }), 400);
+    // No onComplete — player must collect all 25 stars to win
+  }
+
+  function handleWin() {
+    cancelAnimationFrame(animRef.current);
+    setStatus('won');
+    const scoreLabel = 'All 25 magic stars collected!';
+    onComplete(3, scoreLabel);
+    setTimeout(() => setCompletion({ stars: 3, scoreLabel }), 300);
   }
 
   // Game loop
@@ -948,14 +970,13 @@ function SnakeGame({ level, onComplete }) {
         <p className="game-desc">Guide the Genie's carpet to eat ✨ magic stars. Don't hit the walls or your own carpet!</p>
 
         <div className="snake-score-bar">
-          <div className="snake-stat"><div className="snake-stat-val">✨ {score}</div><div className="snake-stat-label">Stars Eaten</div></div>
-          <div className="snake-stat"><div className="snake-stat-val">⭐ {score>=12?3:score>=5?2:score>=1?1:0}</div><div className="snake-stat-label">Current Stars</div></div>
-          <div className="snake-stat" style={{textAlign:'right'}}><div className="snake-stat-val">{length}</div><div className="snake-stat-label">Length</div></div>
+          <div className="snake-stat"><div className="snake-stat-val">{score} / {WIN_SCORE}</div><div className="snake-stat-label">Stars Collected</div></div>
+          <div className="snake-stat" style={{textAlign:'right'}}><div className="snake-stat-val">{length}</div><div className="snake-stat-label">Carpet Length</div></div>
         </div>
 
         <div className="snake-wrap" style={{width:CSIZE}}>
           <canvas ref={canvasRef} width={CSIZE} height={CSIZE} className="snake-canvas" />
-          {status !== 'playing' && (
+          {status !== 'playing' && status !== 'won' && (
             <div className="snake-overlay">
               {status === 'idle'
                 ? <><div style={{fontSize:52, filter:'drop-shadow(0 0 14px rgba(201,168,76,0.7))'}}>🧞</div>
@@ -963,7 +984,8 @@ function SnakeGame({ level, onComplete }) {
                     <button className="game-btn" onClick={startGame}>🪔 Begin the Journey</button></>
                 : <><div style={{fontSize:44}}>💫</div>
                     <div className="snake-overlay-title">The carpet has fallen…</div>
-                    <div style={{fontSize:13, color:'var(--text2)'}}>Stars eaten: {score}</div></>
+                    <div style={{fontSize:13, color:'var(--text2)'}}>{score} / {WIN_SCORE} stars collected</div>
+                    <button className="game-btn" onClick={startGame}>Try Again</button></>
               }
             </div>
           )}
