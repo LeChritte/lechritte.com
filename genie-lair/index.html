@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Genie's Lair</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:    #07050f;
+      --bg2:   #0d0a1c;
+      --bg3:   #131026;
+      --bg4:   #1a1630;
+      --gold:       #c9a84c;
+      --gold-light: #e8c96e;
+      --gold-dim:   rgba(201,168,76,0.12);
+      --gold-glow:  rgba(201,168,76,0.25);
+      --purple:     #7c3aed;
+      --purple-dim: rgba(124,58,237,0.18);
+      --magic: linear-gradient(135deg, #7c3aed 0%, #c9a84c 100%);
+      --text:  #f0eaff;
+      --text2: #9080b8;
+      --text3: #4a3d6a;
+      --border:       rgba(201,168,76,0.14);
+      --border-hover: rgba(201,168,76,0.38);
+      --radius: 14px;
+
+      /* wish card accent palette — mystical */
+      --c0:#9333ea; --c1:#6366f1; --c2:#06b6d4;
+      --c3:#c9a84c; --c4:#f59e0b; --c5:#e879f9;
+      --c6:#ec4899; --c7:#8b5cf6;
+    }
+
+    html, body, #root {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button { font-family: inherit; cursor: pointer; }
+
+    /* ── Stars / smoke bg ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 40% at 50% -10%, rgba(124,58,237,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 30% at 80% 100%, rgba(201,168,76,0.08) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #root { position: relative; z-index: 1; }
+
+    /* ── HUB HEADER ── */
+    .hub-header {
+      background: linear-gradient(180deg, rgba(13,10,28,0.98) 0%, rgba(13,10,28,0.92) 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+    }
+
+    .hub-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .hub-lamp {
+      font-size: 30px;
+      filter: drop-shadow(0 0 8px rgba(201,168,76,0.6));
+      animation: lampPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes lampPulse {
+      0%,100% { filter: drop-shadow(0 0 6px rgba(201,168,76,0.5)); }
+      50%      { filter: drop-shadow(0 0 14px rgba(201,168,76,0.9)); }
+    }
+
+    .hub-title {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hub-header-right { display: flex; align-items: center; gap: 16px; }
+
+    .hub-progress-wrap { display: flex; align-items: center; gap: 10px; }
+
+    .hub-progress-track {
+      width: 120px; height: 6px;
+      background: var(--bg4);
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .hub-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--purple), var(--gold));
+      border-radius: 99px;
+      transition: width 0.5s ease;
+      box-shadow: 0 0 8px var(--gold-glow);
+    }
+
+    .hub-progress-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+
+    .hub-reset-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text3);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+    .hub-reset-btn:hover { border-color: rgba(236,72,153,0.5); color: #ec4899; }
+
+    .hub-subtitle {
+      padding: 10px 32px 0;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--text3);
+      text-transform: uppercase;
+    }
+
+    /* ── GRID ── */
+    .hub-grid {
+      padding: 24px 32px 48px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(204px, 1fr));
+      gap: 14px;
+    }
+
+    /* ── WISH CARD ── */
+    .wish-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+    }
+
+    .wish-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .wish-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 40% at 50% 0%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 70%);
+      pointer-events: none;
+    }
+
+    .wish-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-hover);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px var(--gold-dim);
+    }
+
+    .wish-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .wish-emoji-wrap {
+      width: 46px; height: 46px;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .wish-num {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text3);
+      letter-spacing: 1px;
+    }
+
+    .wish-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.35;
+    }
+
+    .wish-card-desc {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.55;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .wish-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 2px;
+    }
+
+    .wish-play-btn {
+      padding: 6px 15px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+      color: var(--accent);
+      letter-spacing: 0.3px;
+      transition: all 0.15s;
+    }
+    .wish-play-btn:hover {
+      background: color-mix(in srgb, var(--accent) 28%, transparent);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 30%, transparent);
+    }
+
+    .wish-sparkles { display: flex; gap: 1px; font-size: 13px; }
+
+    /* ── LEVEL PAGE ── */
+    .level-page { min-height: 100vh; display: flex; flex-direction: column; }
+
+    .level-topbar {
+      background: rgba(13,10,28,0.95);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      backdrop-filter: blur(12px);
+    }
+
+    .level-back-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text2);
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .level-back-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .level-topbar-num {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .level-topbar-title {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .level-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 36px 24px;
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.8);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100;
+      backdrop-filter: blur(6px);
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+    .modal {
+      background: linear-gradient(160deg, #0f0b20 0%, #0d0a1c 100%);
+      border: 1px solid var(--border-hover);
+      border-radius: 22px;
+      padding: 44px 36px;
+      max-width: 400px;
+      width: 92%;
+      text-align: center;
+      box-shadow: 0 0 60px rgba(124,58,237,0.2), 0 0 0 1px var(--gold-dim);
+      animation: popIn 0.28s cubic-bezier(0.175,0.885,0.32,1.275);
+    }
+    @keyframes popIn { from{opacity:0;transform:scale(0.82)} to{opacity:1;transform:scale(1)} }
+
+    .modal-genie { font-size: 60px; margin-bottom: 10px; filter: drop-shadow(0 0 16px rgba(201,168,76,0.6)); }
+    .modal-title {
+      font-family: 'Cinzel', serif;
+      font-size: 26px;
+      font-weight: 700;
+      background: var(--magic);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+    .modal-subtitle { font-size: 13px; color: var(--text2); margin-bottom: 22px; }
+    .modal-sparkles { font-size: 34px; margin-bottom: 20px; letter-spacing: 6px; }
+    .modal-score {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 14px;
+      color: var(--text2);
+      margin-bottom: 28px;
+    }
+    .modal-score strong { color: var(--gold); }
+
+    .modal-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .modal-btn { padding: 12px 22px; border-radius: 10px; font-size: 14px; font-weight: 700; border: none; transition: all 0.15s; }
+    .modal-btn-primary {
+      background: linear-gradient(135deg, var(--purple), #9333ea);
+      color: white;
+      box-shadow: 0 0 16px rgba(124,58,237,0.4);
+    }
+    .modal-btn-primary:hover { opacity: 0.9; box-shadow: 0 0 24px rgba(124,58,237,0.6); transform: translateY(-1px); }
+    .modal-btn-gold {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: #0d0a1c;
+    }
+    .modal-btn-gold:hover { opacity: 0.9; transform: translateY(-1px); }
+    .modal-btn-secondary { background: var(--bg4); color: var(--text2); border: 1px solid var(--border); }
+    .modal-btn-secondary:hover { color: var(--text); border-color: var(--border-hover); }
+
+    /* ── GAMES SHARED ── */
+    .game-wrap {
+      background: linear-gradient(160deg, #0f0b20 0%, #0d0a1c 100%);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 44px 36px;
+      max-width: 560px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(124,58,237,0.1);
+    }
+
+    .game-title {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold-light);
+      margin-bottom: 10px;
+    }
+    .game-desc { font-size: 14px; color: var(--text2); line-height: 1.65; margin-bottom: 30px; }
+
+    .game-btn {
+      padding: 13px 32px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      background: linear-gradient(135deg, var(--purple) 0%, #9333ea 100%);
+      color: white;
+      box-shadow: 0 0 20px rgba(124,58,237,0.4);
+      transition: all 0.18s;
+      cursor: pointer;
+    }
+    .game-btn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 0 30px rgba(124,58,237,0.6); }
+    .game-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ── REACTION ── */
+    .reaction-screen {
+      width: 100%; height: 260px;
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; font-weight: 800;
+      cursor: pointer; user-select: none;
+      transition: background 0.12s, box-shadow 0.12s;
+      margin: 22px 0;
+      border: 2px solid var(--border);
+    }
+    .reaction-idle { background: var(--bg3); color: var(--text2); }
+    .reaction-wait {
+      background: #1a0808;
+      color: #ef4444;
+      border-color: rgba(239,68,68,0.3);
+      box-shadow: inset 0 0 40px rgba(239,68,68,0.08);
+    }
+    .reaction-go {
+      background: #051a0a;
+      color: #22c55e;
+      border-color: rgba(34,197,94,0.4);
+      box-shadow: inset 0 0 40px rgba(34,197,94,0.12), 0 0 20px rgba(34,197,94,0.2);
+    }
+
+    .reaction-rounds { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
+    .reaction-round {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--bg4); border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: var(--text3);
+    }
+    .reaction-round.done    { background: color-mix(in srgb, var(--gold) 18%, transparent); border-color: var(--gold); color: var(--gold); }
+    .reaction-round.current { border-color: var(--purple); color: #a78bfa; }
+
+    /* ── MATH ── */
+    .math-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+    .math-timer { font-size: 24px; font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
+    .math-timer.urgent { color: #ef4444; animation: pulse 0.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.45} }
+    .math-stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+    .math-stat-val { font-size: 20px; font-weight: 800; color: var(--gold-light); }
+    .math-q { font-size: 44px; font-weight: 800; margin: 22px 0; color: var(--text); letter-spacing: -1px; }
+    .math-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .math-choice {
+      padding: 16px; border-radius: 14px;
+      font-size: 20px; font-weight: 700;
+      border: 1px solid var(--border); background: var(--bg3); color: var(--text);
+      transition: all 0.12s; cursor: pointer;
+    }
+    .math-choice:hover:not(:disabled) { border-color: var(--gold); background: var(--gold-dim); box-shadow: 0 0 12px var(--gold-dim); }
+    .math-choice.correct { border-color: #22c55e; background: rgba(34,197,94,0.12); color: #4ade80; }
+    .math-choice.wrong   { border-color: #ef4444; background: rgba(239,68,68,0.12); color: #f87171; }
+
+    /* ── MEMORY ── */
+    .memory-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .memory-stat-val { font-size: 22px; font-weight: 800; color: var(--gold-light); }
+    .memory-stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+    .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+    .memory-card {
+      aspect-ratio: 1; border-radius: 12px;
+      border: 1px solid var(--border); background: var(--bg3);
+      font-size: 26px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.15s; user-select: none;
+    }
+    .memory-card:hover:not(.flipped):not(.matched) { border-color: var(--gold); transform: scale(1.06); box-shadow: 0 0 14px var(--gold-dim); }
+    .memory-card.flipped { border-color: var(--purple); background: var(--purple-dim); }
+    .memory-card.matched { border-color: var(--gold); background: var(--gold-dim); opacity: 0.75; cursor: default; }
+    .memory-card-back { font-size: 18px; color: var(--text3); }
+
+    /* ── PLACEHOLDER ── */
+    .placeholder-shrine {
+      background: var(--bg3);
+      border: 1px dashed color-mix(in srgb, var(--gold) 30%, transparent);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 28px;
+      color: var(--text3);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .hub-header { padding: 12px 16px; }
+      .hub-grid { padding: 14px 12px 40px; gap: 10px; }
+      .hub-title { font-size: 16px; letter-spacing: 2px; }
+      .hub-progress-track { width: 70px; }
+      .hub-subtitle { padding: 8px 16px 0; }
+      .game-wrap { padding: 28px 18px; }
+      .math-q { font-size: 34px; }
+      .memory-grid { gap: 7px; }
+      .memory-card { font-size: 20px; }
+      .level-topbar { padding: 12px 16px; }
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, createContext, useContext } = React;
+
+// ── Level Data ────────────────────────────────────────────────────────────────
+
+const ACCENT_COLORS = ['#9333ea','#6366f1','#06b6d4','#c9a84c','#f59e0b','#e879f9','#ec4899','#8b5cf6'];
+const getColor = id => ACCENT_COLORS[(id - 1) % ACCENT_COLORS.length];
+
+const LEVELS = [
+  { id:1,  emoji:'⚡', title:'Reaction Time',    desc:'Tap as fast as you can when the screen turns green.',                 game:'reaction'   },
+  { id:2,  emoji:'🔢', title:'Quick Math',       desc:'Solve 10 arithmetic problems before time runs out.',                  game:'quickmath'  },
+  { id:3,  emoji:'🃏', title:'Memory Cards',     desc:'Flip cards to find all matching pairs.',                              game:'memory'     },
+  { id:4,  emoji:'🎨', title:'Color Match',      desc:'Click the word that matches the ink color, not the text.',            game:'placeholder'},
+  { id:5,  emoji:'🔤', title:'Word Scramble',    desc:'Rearrange the letters to reveal the hidden word.',                    game:'placeholder'},
+  { id:6,  emoji:'🔴', title:'Simon Says',       desc:'Watch the color pattern, then repeat it from memory.',                game:'placeholder'},
+  { id:7,  emoji:'🎯', title:'Tap Target',       desc:'Tap the targets before they vanish. Speed counts.',                   game:'placeholder'},
+  { id:8,  emoji:'🔍', title:'Odd One Out',      desc:'Spot the item that does not belong with the others.',                 game:'placeholder'},
+  { id:9,  emoji:'📐', title:'Sequences',        desc:'Identify the pattern and enter the next number in the series.',       game:'placeholder'},
+  { id:10, emoji:'⌨️', title:'Type Racer',       desc:'Type the given phrase as quickly and accurately as you can.',         game:'placeholder'},
+  { id:11, emoji:'💡', title:'Anagram',          desc:'Solve as many anagrams as possible in 60 seconds.',                  game:'placeholder'},
+  { id:12, emoji:'⬛', title:'Pattern Copy',     desc:'Memorize and recreate the grid pattern shown to you.',                game:'placeholder'},
+  { id:13, emoji:'✅', title:'True or False',    desc:'Answer trivia questions with True or False — as fast as you can.',    game:'placeholder'},
+  { id:14, emoji:'🔡', title:'Alphabet Sprint',  desc:'Click each letter of the alphabet in order as fast as possible.',     game:'placeholder'},
+  { id:15, emoji:'🧠', title:'Logic Grid',       desc:'Use the clues to fill in the logic grid correctly.',                  game:'placeholder'},
+  { id:16, emoji:'☝️', title:'Fast Fingers',     desc:'Press the highlighted key on screen before it moves.',               game:'placeholder'},
+  { id:17, emoji:'👁️', title:'Spot the Diff',    desc:'Find all the differences between two similar images.',               game:'placeholder'},
+  { id:18, emoji:'🔗', title:'Word Chain',       desc:"Build a chain where each word starts with the previous word's last letter.", game:'placeholder'},
+  { id:19, emoji:'⚔️', title:'Number Ninja',     desc:'Slice only the correct answers as equations fly across the screen.',  game:'placeholder'},
+  { id:20, emoji:'📊', title:'Grid Puzzle',      desc:'Fill the 5×5 grid so no row or column repeats a symbol.',             game:'placeholder'},
+  { id:21, emoji:'🌈', title:'Color Blend',      desc:'Adjust sliders to mix a color that matches the target swatch.',       game:'placeholder'},
+  { id:22, emoji:'🏋️', title:'Reflex Train',     desc:'Advanced reaction test — dodge fakes, only hit real targets.',        game:'placeholder'},
+  { id:23, emoji:'💥', title:'Math Blaster',     desc:'Shoot down only the correct answers before they reach the bottom.',   game:'placeholder'},
+  { id:24, emoji:'🔎', title:'Letter Hunt',      desc:'Find all instances of a target letter in a jumbled grid.',            game:'placeholder'},
+  { id:25, emoji:'🔲', title:'Icon Match',       desc:'Match icons to their categories at increasing speed.',                game:'placeholder'},
+  { id:26, emoji:'🔓', title:'Code Breaker',     desc:'Decode the substitution cipher to reveal the secret message.',        game:'placeholder'},
+  { id:27, emoji:'📖', title:'Speed Reader',     desc:'Read a short passage, then answer comprehension questions.',          game:'placeholder'},
+  { id:28, emoji:'•',  title:'Dot Connect',      desc:'Connect numbered dots in the correct order before time runs out.',    game:'placeholder'},
+  { id:29, emoji:'⚖️', title:'Balance Scale',    desc:'Add the right weights to balance both sides of the scale.',           game:'placeholder'},
+  { id:30, emoji:'🖌️', title:'Pixel Draw',       desc:'Fill in the pixel grid to recreate the reference image.',            game:'placeholder'},
+  { id:31, emoji:'🧩', title:'Brain Teaser',     desc:'Solve lateral-thinking riddles by asking the right yes/no questions.',game:'placeholder'},
+  { id:32, emoji:'⬇️', title:'Gravity Flip',     desc:'Navigate a ball through obstacles while gravity constantly flips.',   game:'placeholder'},
+  { id:33, emoji:'📡', title:'Morse Code',       desc:'Decode incoming morse code signals into readable letters.',           game:'placeholder'},
+  { id:34, emoji:'🔊', title:'Sound Match',      desc:'Match each sound clip to its correct on-screen source.',              game:'placeholder'},
+  { id:35, emoji:'🔥', title:'Chain Reaction',   desc:'Tap to trigger chain reactions that clear as many pieces as possible.',game:'placeholder'},
+  { id:36, emoji:'🔷', title:'Shape Shifter',    desc:'Identify how a 3D shape looks after it has been rotated.',            game:'placeholder'},
+  { id:37, emoji:'❄️', title:'Word Avalanche',   desc:'Sort falling words into the correct categories before they land.',    game:'placeholder'},
+  { id:38, emoji:'⚡', title:'Reflex Master',    desc:'The ultimate multi-stimulus reaction challenge.',                     game:'placeholder'},
+  { id:39, emoji:'🏆', title:'Grand Finale',     desc:'A rapid-fire mashup of skills from all previous games.',              game:'placeholder'},
+  { id:40, emoji:'👑', title:'Champion',         desc:'You made it. Prove you are the ultimate master of the lamp.',         game:'placeholder'},
+];
+
+// ── Progress ──────────────────────────────────────────────────────────────────
+
+const STORAGE_KEY = 'genieWishes_v1';
+const ProgressCtx = createContext(null);
+
+function ProgressProvider({ children }) {
+  const [progress, setProgress] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+    catch { return {}; }
+  });
+  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); }, [progress]);
+
+  const markCompleted = (id, stars, scoreLabel = null) => {
+    setProgress(prev => {
+      if (prev[id]?.stars >= stars) return prev;
+      return { ...prev, [id]: { stars, scoreLabel, completedAt: Date.now() } };
+    });
+  };
+  const resetProgress = () => setProgress({});
+  const completedCount = Object.keys(progress).length;
+
+  return (
+    <ProgressCtx.Provider value={{ progress, markCompleted, resetProgress, completedCount }}>
+      {children}
+    </ProgressCtx.Provider>
+  );
+}
+const useProgress = () => useContext(ProgressCtx);
+
+// ── Hash Router ───────────────────────────────────────────────────────────────
+
+function useRoute() {
+  const [hash, setHash] = useState(window.location.hash || '#/');
+  useEffect(() => {
+    const h = () => setHash(window.location.hash || '#/');
+    window.addEventListener('hashchange', h);
+    return () => window.removeEventListener('hashchange', h);
+  }, []);
+  const go = path => { window.location.hash = path; };
+  const match = hash.match(/^#\/level\/(\d+)/);
+  const levelId = match ? Number(match[1]) : null;
+  return { isHub: !levelId, levelId, go };
+}
+
+// ── Completion Modal ──────────────────────────────────────────────────────────
+
+const MODAL_MSGS = {
+  1: { title: 'Wish Granted!',      sub: 'The Genie answers your call.',        genie: '🧞' },
+  2: { title: 'Impressive Wish!',   sub: 'Your power grows, master.',            genie: '🧞‍♂️' },
+  3: { title: 'Master of the Lamp!',sub: 'A perfect wish — truly legendary.',   genie: '✨' },
+};
+
+function CompletionModal({ levelId, stars, scoreLabel, onClose }) {
+  const { go } = useRoute();
+  const next = LEVELS.find(l => l.id === levelId + 1);
+  const msg = MODAL_MSGS[stars] || MODAL_MSGS[1];
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-genie">{msg.genie}</div>
+        <h2 className="modal-title">{msg.title}</h2>
+        <p className="modal-subtitle">{msg.sub}</p>
+        <div className="modal-sparkles">
+          {[1,2,3].map(n => <span key={n} style={{opacity: n<=stars ? 1 : 0.12}}>✨</span>)}
+        </div>
+        {scoreLabel && (
+          <div className="modal-score">
+            <strong>{scoreLabel}</strong>
+          </div>
+        )}
+        <div className="modal-actions">
+          <button className="modal-btn modal-btn-secondary" onClick={() => go('#/')}>🪔 Lamp</button>
+          <button className="modal-btn modal-btn-primary" onClick={onClose}>Retry</button>
+          {next && (
+            <button className="modal-btn modal-btn-gold" onClick={() => go(`#/level/${next.id}`)}>
+              Next Wish →
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Wish Card ─────────────────────────────────────────────────────────────────
+
+function Sparkles({ count }) {
+  return (
+    <div className="wish-sparkles">
+      {[1,2,3].map(n => <span key={n} style={{opacity: n<=count ? 1 : 0.15}}>✨</span>)}
+    </div>
+  );
+}
+
+function WishCard({ level, completion }) {
+  const { go } = useRoute();
+  const color = getColor(level.id);
+  return (
+    <div className="wish-card" style={{'--accent': color}} onClick={() => go(`#/level/${level.id}`)}>
+      <div className="wish-card-top">
+        <div className="wish-emoji-wrap">{level.emoji}</div>
+        <span className="wish-num">Wish #{level.id}</span>
+      </div>
+      <div className="wish-card-title">{level.title}</div>
+      <div className="wish-card-desc">{level.desc}</div>
+      <div className="wish-card-footer">
+        <button className="wish-play-btn" style={{'--accent': color}}>
+          {completion ? 'Re-Wish' : 'Make a Wish'}
+        </button>
+        {completion && <Sparkles count={completion.stars} />}
+      </div>
+    </div>
+  );
+}
+
+// ── Hub Page ──────────────────────────────────────────────────────────────────
+
+function HubPage() {
+  const { progress, completedCount, resetProgress } = useProgress();
+  const pct = Math.round((completedCount / LEVELS.length) * 100);
+
+  const handleReset = () => {
+    if (window.confirm('Erase all granted wishes? The Genie forgets everything.')) resetProgress();
+  };
+
+  return (
+    <div>
+      <header className="hub-header">
+        <div className="hub-logo">
+          <span className="hub-lamp">🪔</span>
+          <h1 className="hub-title">Genie's Lair</h1>
+        </div>
+        <div className="hub-header-right">
+          <div className="hub-progress-wrap">
+            <div className="hub-progress-track">
+              <div className="hub-progress-fill" style={{width:`${pct}%`}} />
+            </div>
+            <span className="hub-progress-label">{completedCount} / {LEVELS.length} wishes</span>
+          </div>
+          <button className="hub-reset-btn" onClick={handleReset}>Forget All</button>
+        </div>
+      </header>
+
+      <p className="hub-subtitle">Choose your wish, master</p>
+
+      <main className="hub-grid">
+        {LEVELS.map(l => <WishCard key={l.id} level={l} completion={progress[l.id]} />)}
+      </main>
+    </div>
+  );
+}
+
+// ── GAME: Placeholder ─────────────────────────────────────────────────────────
+
+function PlaceholderGame({ level, onComplete }) {
+  const [done, setDone] = useState(false);
+  const finish = () => { onComplete(1, 'Wish fulfilled by the Genie'); setDone(true); };
+  return (
+    <>
+      <div className="game-wrap">
+        <div style={{fontSize:54, marginBottom:14, filter:'drop-shadow(0 0 12px rgba(201,168,76,0.5))'}}>{level.emoji}</div>
+        <h2 className="game-title">{level.title}</h2>
+        <p className="game-desc">{level.desc}</p>
+        <div className="placeholder-shrine">
+          🧞 The Genie is still weaving this challenge.<br/>
+          Rub the lamp below to mark it complete and continue your journey.
+        </div>
+        <button className="game-btn" onClick={finish}>🪔 Rub the Lamp</button>
+      </div>
+      {done && (
+        <CompletionModal levelId={level.id} stars={1} scoreLabel="Wish fulfilled by the Genie" onClose={() => setDone(false)} />
+      )}
+    </>
+  );
+}
+
+// ── GAME: Reaction Time ───────────────────────────────────────────────────────
+
+const ROUNDS = 3;
+
+function ReactionGame({ level, onComplete }) {
+  const [phase, setPhase]       = useState('idle');
+  const [round, setRound]       = useState(0);
+  const [times, setTimes]       = useState([]);
+  const [lastMs, setLastMs]     = useState(null);
+  const [tooSoon, setTooSoon]   = useState(false);
+  const [completion, setCompletion] = useState(null);
+  const goAt = useRef(null);
+  const timer = useRef(null);
+
+  function startWait() {
+    setPhase('waiting'); setTooSoon(false);
+    timer.current = setTimeout(() => {
+      goAt.current = performance.now();
+      setPhase('go');
+    }, 1500 + Math.random() * 2500);
+  }
+
+  function handleTap() {
+    if (phase === 'idle')    { startWait(); return; }
+    if (phase === 'waiting') { clearTimeout(timer.current); setTooSoon(true); setPhase('idle'); return; }
+    if (phase === 'go') {
+      const ms = Math.round(performance.now() - goAt.current);
+      const newTimes = [...times, ms];
+      setLastMs(ms); setTimes(newTimes);
+      const next = round + 1;
+      if (next >= ROUNDS) {
+        const avg = Math.round(newTimes.reduce((a,b)=>a+b,0)/newTimes.length);
+        const stars = avg < 260 ? 3 : avg < 420 ? 2 : 1;
+        const scoreLabel = `Average reaction: ${avg}ms`;
+        onComplete(stars, scoreLabel);
+        setCompletion({ stars, scoreLabel });
+        setPhase('idle');
+      } else { setRound(next); setPhase('result'); }
+    }
+  }
+
+  const screenClass = phase === 'waiting' ? 'reaction-wait' : phase === 'go' ? 'reaction-go' : 'reaction-idle';
+  const screenText =
+    phase === 'waiting' ? '🧞 The Genie is preparing...' :
+    phase === 'go'      ? '✨ TAP NOW!' :
+    phase === 'result'  ? `${lastMs}ms — tap to continue` :
+    tooSoon             ? '❌ Too eager! Tap to try again' :
+    lastMs              ? `${lastMs}ms ✨ tap to continue` :
+                          '🪔 Tap to summon the Genie';
+
+  const avg = times.length ? Math.round(times.reduce((a,b)=>a+b,0)/times.length) : null;
+
+  function restart() {
+    setPhase('idle'); setRound(0); setTimes([]); setLastMs(null); setTooSoon(false); setCompletion(null);
+  }
+
+  return (
+    <>
+      <div className="game-wrap">
+        <h2 className="game-title">⚡ Reaction Time</h2>
+        <p className="game-desc">Tap the instant the lamp glows green. {ROUNDS} rounds — fastest average wins.</p>
+        <div className="reaction-rounds">
+          {Array.from({length:ROUNDS}).map((_,i) => (
+            <div key={i} className={`reaction-round ${i < times.length ? 'done' : i === round ? 'current' : ''}`}>
+              {times[i] ? `${times[i]}` : i+1}
+            </div>
+          ))}
+        </div>
+        <div className={`reaction-screen ${screenClass}`} onClick={handleTap}>{screenText}</div>
+        {avg && <p style={{color:'var(--text2)', fontSize:13}}>Running avg: <strong style={{color:'var(--gold)'}}>{avg}ms</strong></p>}
+      </div>
+      {completion && <CompletionModal levelId={level.id} stars={completion.stars} scoreLabel={completion.scoreLabel} onClose={restart} />}
+    </>
+  );
+}
+
+// ── GAME: Quick Math ──────────────────────────────────────────────────────────
+
+function genQ() {
+  const ops = ['+','-','×'];
+  const op = ops[Math.floor(Math.random()*3)];
+  let a,b,ans;
+  if (op==='+') { a=~~(Math.random()*20)+1; b=~~(Math.random()*20)+1; ans=a+b; }
+  else if (op==='-') { a=~~(Math.random()*19)+2; b=~~(Math.random()*(a-1))+1; ans=a-b; }
+  else { a=~~(Math.random()*9)+2; b=~~(Math.random()*9)+2; ans=a*b; }
+  const set = new Set([ans]);
+  while (set.size < 4) { const d=~~(Math.random()*10)+1; set.add(ans + (Math.random()>.5?d:-d)); }
+  return { text:`${a} ${op} ${b}`, ans, choices:[...set].sort(()=>Math.random()-0.5) };
+}
+
+function QuickMathGame({ level, onComplete }) {
+  const TOTAL=10, TIME=30;
+  const [started, setStarted] = useState(false);
+  const [q, setQ]             = useState(genQ);
+  const [qIdx, setQIdx]       = useState(0);
+  const [correct, setCorrect] = useState(0);
+  const [chosen, setChosen]   = useState(null);
+  const [timeLeft, setTimeLeft] = useState(TIME);
+  const [completion, setCompletion] = useState(null);
+  const timerRef = useRef(null);
+  const correctRef = useRef(0);
+
+  useEffect(() => {
+    if (!started) return;
+    timerRef.current = setInterval(() => {
+      setTimeLeft(t => {
+        if (t <= 1) { clearInterval(timerRef.current); finish(correctRef.current); return 0; }
+        return t-1;
+      });
+    }, 1000);
+    return () => clearInterval(timerRef.current);
+  }, [started]);
+
+  function finish(c) {
+    clearInterval(timerRef.current);
+    const stars = c===TOTAL ? 3 : c>=7 ? 2 : 1;
+    const scoreLabel = `${c} / ${TOTAL} correct`;
+    onComplete(stars, scoreLabel);
+    setCompletion({ stars, scoreLabel });
+  }
+
+  function pick(c) {
+    if (chosen !== null) return;
+    setChosen(c);
+    const ok = c === q.ans;
+    const nc = ok ? correct+1 : correct;
+    if (ok) { setCorrect(nc); correctRef.current = nc; }
+    setTimeout(() => {
+      const ni = qIdx+1;
+      if (ni >= TOTAL) finish(nc);
+      else { setQIdx(ni); setQ(genQ()); setChosen(null); }
+    }, 520);
+  }
+
+  function restart() {
+    setStarted(false); setQ(genQ()); setQIdx(0); setCorrect(0);
+    correctRef.current=0; setChosen(null); setTimeLeft(TIME); setCompletion(null);
+  }
+
+  if (!started) return (
+    <div className="game-wrap">
+      <div style={{fontSize:48, marginBottom:14}}>🔢</div>
+      <h2 className="game-title">Quick Math</h2>
+      <p className="game-desc">
+        The Genie demands {TOTAL} correct answers in {TIME} seconds.<br/>
+        Three ✨ for perfection.
+      </p>
+      <button className="game-btn" onClick={() => setStarted(true)}>🪔 Begin the Trial</button>
+    </div>
+  );
+
+  return (
+    <>
+      <div className="game-wrap">
+        <div className="math-header">
+          <div><div className="math-stat-label">Score</div><div className="math-stat-val">{correct}/{qIdx}</div></div>
+          <div className={`math-timer ${timeLeft<=8?'urgent':''}`}>{timeLeft}s</div>
+          <div style={{textAlign:'right'}}><div className="math-stat-label">Question</div><div className="math-stat-val">{qIdx+1}/{TOTAL}</div></div>
+        </div>
+        <div className="math-q">{q.text} = ?</div>
+        <div className="math-choices">
+          {q.choices.map(c => (
+            <button
+              key={c} disabled={chosen!==null}
+              className={`math-choice ${chosen===null?'':c===q.ans?'correct':c===chosen?'wrong':''}`}
+              onClick={() => pick(c)}
+            >{c}</button>
+          ))}
+        </div>
+      </div>
+      {completion && <CompletionModal levelId={level.id} stars={completion.stars} scoreLabel={completion.scoreLabel} onClose={restart} />}
+    </>
+  );
+}
+
+// ── GAME: Memory Cards ────────────────────────────────────────────────────────
+
+const MEM_EMOJIS = ['🪔','🧞','✨','🌙','⭐','🔮','🪄','💫'];
+
+function buildDeck() {
+  const arr = [...MEM_EMOJIS, ...MEM_EMOJIS];
+  for (let i=arr.length-1; i>0; i--) {
+    const j=~~(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr.map((e,i) => ({id:i, emoji:e, flipped:false, matched:false}));
+}
+
+function MemoryGame({ level, onComplete }) {
+  const [cards, setCards]     = useState(buildDeck);
+  const [sel, setSel]         = useState([]);
+  const [flips, setFlips]     = useState(0);
+  const [locked, setLocked]   = useState(false);
+  const [completion, setCompletion] = useState(null);
+
+  useEffect(() => {
+    if (sel.length < 2) return;
+    const [a,b] = sel;
+    setLocked(true);
+    if (cards[a].emoji === cards[b].emoji) {
+      setCards(prev => prev.map((c,i) => i===a||i===b ? {...c,matched:true,flipped:true} : c));
+      setSel([]); setLocked(false);
+    } else {
+      setTimeout(() => {
+        setCards(prev => prev.map((c,i) => i===a||i===b ? {...c,flipped:false} : c));
+        setSel([]); setLocked(false);
+      }, 900);
+    }
+  }, [sel]);
+
+  useEffect(() => {
+    if (cards.length && cards.every(c=>c.matched)) {
+      const stars = flips<=18 ? 3 : flips<=26 ? 2 : 1;
+      const scoreLabel = `${flips} flips — board cleared!`;
+      onComplete(stars, scoreLabel);
+      setCompletion({ stars, scoreLabel });
+    }
+  }, [cards]);
+
+  function tap(i) {
+    if (locked || cards[i].flipped || cards[i].matched || sel.length===2) return;
+    if (sel.length===1 && sel[0]===i) return;
+    setCards(prev => prev.map((c,idx) => idx===i ? {...c,flipped:true} : c));
+    setSel(prev => [...prev, i]);
+    setFlips(f=>f+1);
+  }
+
+  function restart() { setCards(buildDeck()); setSel([]); setFlips(0); setLocked(false); setCompletion(null); }
+
+  const matched = cards.filter(c=>c.matched).length / 2;
+
+  return (
+    <>
+      <div className="game-wrap" style={{maxWidth:420}}>
+        <div className="memory-header">
+          <div className="memory-stat"><div className="memory-stat-val">{flips}</div><div className="memory-stat-label">Flips</div></div>
+          <div style={{fontFamily:"'Cinzel',serif", fontSize:15, fontWeight:700, color:'var(--gold-light)'}}>✨ Memory</div>
+          <div className="memory-stat" style={{textAlign:'right'}}><div className="memory-stat-val">{matched}/{MEM_EMOJIS.length}</div><div className="memory-stat-label">Matched</div></div>
+        </div>
+        <div className="memory-grid">
+          {cards.map((card,i) => (
+            <div
+              key={card.id}
+              className={`memory-card ${card.flipped?'flipped':''} ${card.matched?'matched':''}`}
+              onClick={() => tap(i)}
+            >
+              {card.flipped||card.matched ? card.emoji : <span className="memory-card-back">🪔</span>}
+            </div>
+          ))}
+        </div>
+      </div>
+      {completion && <CompletionModal levelId={level.id} stars={completion.stars} scoreLabel={completion.scoreLabel} onClose={restart} />}
+    </>
+  );
+}
+
+// ── Registry ──────────────────────────────────────────────────────────────────
+
+const REGISTRY = {
+  placeholder: PlaceholderGame,
+  reaction:    ReactionGame,
+  quickmath:   QuickMathGame,
+  memory:      MemoryGame,
+};
+
+// ── Level Page ────────────────────────────────────────────────────────────────
+
+function LevelPage({ levelId }) {
+  const { go } = useRoute();
+  const { markCompleted } = useProgress();
+  const level = LEVELS.find(l => l.id === levelId);
+
+  if (!level) return (
+    <div style={{padding:48, textAlign:'center'}}>
+      <p style={{color:'var(--text2)', marginBottom:20}}>The Genie cannot find this wish.</p>
+      <button className="game-btn" onClick={() => go('#/')}>🪔 Return to the Lamp</button>
+    </div>
+  );
+
+  const color = getColor(level.id);
+  const Game = REGISTRY[level.game] || REGISTRY.placeholder;
+
+  return (
+    <div className="level-page">
+      <div className="level-topbar">
+        <button className="level-back-btn" onClick={() => go('#/')}>🪔 Return to Lamp</button>
+        <div>
+          <div className="level-topbar-num">Wish #{level.id}</div>
+          <div className="level-topbar-title" style={{color}}>{level.title}</div>
+        </div>
+      </div>
+      <div className="level-content">
+        <Game key={levelId} level={level} onComplete={(s,l) => markCompleted(levelId, s, l)} />
+      </div>
+    </div>
+  );
+}
+
+// ── App ───────────────────────────────────────────────────────────────────────
+
+function App() {
+  const { isHub, levelId } = useRoute();
+  return (
+    <ProgressProvider>
+      {isHub ? <HubPage /> : <LevelPage levelId={levelId} />}
+    </ProgressProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
