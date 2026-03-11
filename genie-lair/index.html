@@ -412,41 +412,6 @@
     .game-btn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 0 30px rgba(124,58,237,0.6); }
     .game-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
 
-    /* ── REACTION ── */
-    .reaction-screen {
-      width: 100%; height: 260px;
-      border-radius: 18px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 24px; font-weight: 800;
-      cursor: pointer; user-select: none;
-      transition: background 0.12s, box-shadow 0.12s;
-      margin: 22px 0;
-      border: 2px solid var(--border);
-    }
-    .reaction-idle { background: var(--bg3); color: var(--text2); }
-    .reaction-wait {
-      background: #1a0808;
-      color: #ef4444;
-      border-color: rgba(239,68,68,0.3);
-      box-shadow: inset 0 0 40px rgba(239,68,68,0.08);
-    }
-    .reaction-go {
-      background: #051a0a;
-      color: #22c55e;
-      border-color: rgba(34,197,94,0.4);
-      box-shadow: inset 0 0 40px rgba(34,197,94,0.12), 0 0 20px rgba(34,197,94,0.2);
-    }
-
-    .reaction-rounds { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
-    .reaction-round {
-      width: 34px; height: 34px; border-radius: 50%;
-      background: var(--bg4); border: 2px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700; color: var(--text3);
-    }
-    .reaction-round.done    { background: color-mix(in srgb, var(--gold) 18%, transparent); border-color: var(--gold); color: var(--gold); }
-    .reaction-round.current { border-color: var(--purple); color: #a78bfa; }
-
     /* ── MATH ── */
     .math-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
     .math-timer { font-size: 24px; font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
@@ -481,6 +446,39 @@
     .memory-card.flipped { border-color: var(--purple); background: var(--purple-dim); }
     .memory-card.matched { border-color: var(--gold); background: var(--gold-dim); opacity: 0.75; cursor: default; }
     .memory-card-back { font-size: 18px; color: var(--text3); }
+
+    /* ── SNAKE ── */
+    .snake-wrap { position: relative; margin: 0 auto; }
+    .snake-canvas { display: block; margin: 0 auto; border-radius: 14px; border: 1px solid var(--border); }
+    .snake-overlay {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 18px; border-radius: 14px;
+      background: rgba(7,5,15,0.88);
+      backdrop-filter: blur(4px);
+    }
+    .snake-overlay-title { font-family: 'Cinzel', serif; font-size: 16px; color: var(--gold-light); letter-spacing: 1px; }
+    .snake-score-bar { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
+    .snake-stat { text-align: center; }
+    .snake-stat-val { font-size: 20px; font-weight: 800; color: var(--gold-light); }
+    .snake-stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+    .snake-dpad {
+      display: grid;
+      grid-template-areas: '. up .' 'left . right' '. down .';
+      grid-template-columns: repeat(3, 44px);
+      grid-template-rows: repeat(3, 44px);
+      gap: 5px;
+      margin: 14px auto 0;
+      width: fit-content;
+    }
+    .dpad-btn {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--gold); font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.1s; user-select: none;
+    }
+    .dpad-btn:active { background: var(--gold-dim); transform: scale(0.9); }
 
     /* ── PLACEHOLDER ── */
     .placeholder-shrine {
@@ -520,7 +518,7 @@ const ACCENT_COLORS = ['#9333ea','#6366f1','#06b6d4','#c9a84c','#f59e0b','#e879f
 const getColor = id => ACCENT_COLORS[(id - 1) % ACCENT_COLORS.length];
 
 const LEVELS = [
-  { id:1,  emoji:'⚡', title:'Reaction Time',    desc:'Tap as fast as you can when the screen turns green.',                 game:'reaction'   },
+  { id:1,  emoji:'🧞', title:'Magic Carpet Snake', desc:"Guide the Genie's magic carpet to eat ✨ stars. Don't hit the walls or your own carpet!", game:'snake' },
   { id:2,  emoji:'🔢', title:'Quick Math',       desc:'Solve 10 arithmetic problems before time runs out.',                  game:'quickmath'  },
   { id:3,  emoji:'🃏', title:'Memory Cards',     desc:'Flip cards to find all matching pairs.',                              game:'memory'     },
   { id:4,  emoji:'🎨', title:'Color Match',      desc:'Click the word that matches the ink color, not the text.',            game:'placeholder'},
@@ -739,78 +737,249 @@ function PlaceholderGame({ level, onComplete }) {
   );
 }
 
-// ── GAME: Reaction Time ───────────────────────────────────────────────────────
+// ── GAME: Magic Carpet Snake ──────────────────────────────────────────────────
 
-const ROUNDS = 3;
+const GRID = 20, CELL = 16, CSIZE = GRID * CELL; // 320px
 
-function ReactionGame({ level, onComplete }) {
-  const [phase, setPhase]       = useState('idle');
-  const [round, setRound]       = useState(0);
-  const [times, setTimes]       = useState([]);
-  const [lastMs, setLastMs]     = useState(null);
-  const [tooSoon, setTooSoon]   = useState(false);
-  const [completion, setCompletion] = useState(null);
-  const goAt = useRef(null);
-  const timer = useRef(null);
+function rrect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+}
 
-  function startWait() {
-    setPhase('waiting'); setTooSoon(false);
-    timer.current = setTimeout(() => {
-      goAt.current = performance.now();
-      setPhase('go');
-    }, 1500 + Math.random() * 2500);
+function randomFood(snake) {
+  let pos;
+  do { pos = { x: ~~(Math.random()*GRID), y: ~~(Math.random()*GRID) }; }
+  while (snake.some(s => s.x===pos.x && s.y===pos.y));
+  return pos;
+}
+
+function drawSnake(ctx, g) {
+  // Background
+  ctx.fillStyle = '#07050f';
+  ctx.fillRect(0, 0, CSIZE, CSIZE);
+
+  // Subtle grid dots
+  for (let x=0; x<GRID; x++) for (let y=0; y<GRID; y++) {
+    ctx.fillStyle = 'rgba(201,168,76,0.055)';
+    ctx.fillRect(x*CELL + CELL/2 - 0.5, y*CELL + CELL/2 - 0.5, 1, 1);
   }
 
-  function handleTap() {
-    if (phase === 'idle')    { startWait(); return; }
-    if (phase === 'waiting') { clearTimeout(timer.current); setTooSoon(true); setPhase('idle'); return; }
-    if (phase === 'go') {
-      const ms = Math.round(performance.now() - goAt.current);
-      const newTimes = [...times, ms];
-      setLastMs(ms); setTimes(newTimes);
-      const next = round + 1;
-      if (next >= ROUNDS) {
-        const avg = Math.round(newTimes.reduce((a,b)=>a+b,0)/newTimes.length);
-        const stars = avg < 260 ? 3 : avg < 420 ? 2 : 1;
-        const scoreLabel = `Average reaction: ${avg}ms`;
-        onComplete(stars, scoreLabel);
-        setCompletion({ stars, scoreLabel });
-        setPhase('idle');
-      } else { setRound(next); setPhase('result'); }
+  if (!g) return;
+
+  // Food glow
+  ctx.save();
+  ctx.shadowColor = '#c9a84c';
+  ctx.shadowBlur = 10;
+  ctx.font = `${CELL-1}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('✨', g.food.x*CELL + CELL/2, g.food.y*CELL + CELL/2);
+  ctx.restore();
+
+  // Carpet body (tail → neck, so head renders on top)
+  for (let i = g.snake.length-1; i >= 1; i--) {
+    const { x, y } = g.snake[i];
+    const px = x*CELL, py = y*CELL, p = 1.5;
+    const dark = i % 2 === 0;
+    // Fill
+    const grad = ctx.createLinearGradient(px, py, px+CELL, py+CELL);
+    grad.addColorStop(0, dark ? '#3b1691' : '#4c1d95');
+    grad.addColorStop(1, dark ? '#5b21b6' : '#6d28d9');
+    ctx.fillStyle = grad;
+    rrect(ctx, px+p, py+p, CELL-p*2, CELL-p*2, 3);
+    ctx.fill();
+    // Gold border
+    ctx.strokeStyle = 'rgba(201,168,76,0.7)';
+    ctx.lineWidth = 1;
+    rrect(ctx, px+p, py+p, CELL-p*2, CELL-p*2, 3);
+    ctx.stroke();
+    // Carpet weave lines
+    ctx.strokeStyle = 'rgba(201,168,76,0.22)';
+    ctx.lineWidth = 0.5;
+    for (let k=1; k<3; k++) {
+      const ly = py+p + (CELL-p*2)*k/3;
+      ctx.beginPath(); ctx.moveTo(px+p, ly); ctx.lineTo(px+CELL-p, ly); ctx.stroke();
     }
   }
 
-  const screenClass = phase === 'waiting' ? 'reaction-wait' : phase === 'go' ? 'reaction-go' : 'reaction-idle';
-  const screenText =
-    phase === 'waiting' ? '🧞 The Genie is preparing...' :
-    phase === 'go'      ? '✨ TAP NOW!' :
-    phase === 'result'  ? `${lastMs}ms — tap to continue` :
-    tooSoon             ? '❌ Too eager! Tap to try again' :
-    lastMs              ? `${lastMs}ms ✨ tap to continue` :
-                          '🪔 Tap to summon the Genie';
+  // Genie head
+  const { x: hx, y: hy } = g.snake[0];
+  const px = hx*CELL, py = hy*CELL, p = 1;
+  const hgrad = ctx.createLinearGradient(px, py, px+CELL, py+CELL);
+  hgrad.addColorStop(0, '#c9a84c');
+  hgrad.addColorStop(1, '#e8c96e');
+  ctx.fillStyle = hgrad;
+  rrect(ctx, px+p, py+p, CELL-p*2, CELL-p*2, 4);
+  ctx.fill();
+  ctx.save();
+  ctx.shadowColor = 'rgba(201,168,76,0.8)';
+  ctx.shadowBlur = 8;
+  ctx.font = `${CELL-2}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🧞', px+CELL/2, py+CELL/2);
+  ctx.restore();
+}
 
-  const avg = times.length ? Math.round(times.reduce((a,b)=>a+b,0)/times.length) : null;
+function SnakeGame({ level, onComplete }) {
+  const canvasRef = useRef(null);
+  const gameRef   = useRef(null);
+  const animRef   = useRef(null);
+  const lastTick  = useRef(0);
+  const [score, setScore]   = useState(0);
+  const [length, setLength] = useState(3);
+  const [status, setStatus] = useState('idle'); // idle | playing | dead
+  const [completion, setCompletion] = useState(null);
+
+  function initGame() {
+    const snake = [{x:10,y:10},{x:9,y:10},{x:8,y:10}];
+    gameRef.current = {
+      snake, dir:{x:1,y:0}, nextDir:{x:1,y:0},
+      food: randomFood(snake), score:0, speed:155, status:'playing',
+    };
+  }
+
+  function changeDir(dx, dy) {
+    const g = gameRef.current;
+    if (!g || g.status !== 'playing') return;
+    if (dx === -g.dir.x && dy === -g.dir.y) return; // no reversing
+    g.nextDir = {x:dx, y:dy};
+  }
+
+  function tick() {
+    const g = gameRef.current;
+    if (!g || g.status !== 'playing') return;
+    g.dir = g.nextDir;
+    const head = { x: g.snake[0].x + g.dir.x, y: g.snake[0].y + g.dir.y };
+    // Wall collision
+    if (head.x < 0 || head.x >= GRID || head.y < 0 || head.y >= GRID) {
+      g.status = 'dead'; handleGameOver(g.score); return;
+    }
+    // Self collision (ignore last segment — it's about to move)
+    if (g.snake.slice(0, -1).some(s => s.x===head.x && s.y===head.y)) {
+      g.status = 'dead'; handleGameOver(g.score); return;
+    }
+    g.snake.unshift(head);
+    if (head.x === g.food.x && head.y === g.food.y) {
+      g.score++;
+      g.speed = Math.max(75, g.speed - 3);
+      g.food = randomFood(g.snake);
+      setScore(g.score);
+      setLength(g.snake.length);
+    } else {
+      g.snake.pop();
+    }
+  }
+
+  function handleGameOver(s) {
+    cancelAnimationFrame(animRef.current);
+    setStatus('dead');
+    const stars = s >= 12 ? 3 : s >= 5 ? 2 : 1;
+    const scoreLabel = `Ate ${s} magic star${s!==1?'s':''}`;
+    onComplete(stars, scoreLabel);
+    setTimeout(() => setCompletion({ stars, scoreLabel }), 400);
+  }
+
+  // Game loop
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function loop(ts) {
+      animRef.current = requestAnimationFrame(loop);
+      const g = gameRef.current;
+      if (g?.status === 'playing' && ts - lastTick.current >= g.speed) {
+        lastTick.current = ts;
+        tick();
+      }
+      drawSnake(ctx, g);
+    }
+    animRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(animRef.current);
+  }, []);
+
+  // Keyboard
+  useEffect(() => {
+    const MAP = { ArrowUp:[0,-1], ArrowDown:[0,1], ArrowLeft:[-1,0], ArrowRight:[1,0] };
+    function onKey(e) {
+      const d = MAP[e.key];
+      if (d) { e.preventDefault(); changeDir(d[0], d[1]); }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  // Touch/swipe
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    let sx, sy;
+    const onStart = e => { sx=e.touches[0].clientX; sy=e.touches[0].clientY; };
+    const onEnd = e => {
+      const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+      if (Math.abs(dx)<10 && Math.abs(dy)<10) return;
+      Math.abs(dx)>Math.abs(dy) ? changeDir(dx>0?1:-1,0) : changeDir(0,dy>0?1:-1);
+    };
+    canvas.addEventListener('touchstart', onStart, {passive:true});
+    canvas.addEventListener('touchend', onEnd, {passive:true});
+    return () => { canvas.removeEventListener('touchstart', onStart); canvas.removeEventListener('touchend', onEnd); };
+  }, []);
+
+  function startGame() {
+    setScore(0); setLength(3); setStatus('playing'); setCompletion(null);
+    lastTick.current = 0;
+    initGame();
+  }
 
   function restart() {
-    setPhase('idle'); setRound(0); setTimes([]); setLastMs(null); setTooSoon(false); setCompletion(null);
+    setCompletion(null); setStatus('idle');
+    gameRef.current = null;
   }
 
   return (
     <>
-      <div className="game-wrap">
-        <h2 className="game-title">⚡ Reaction Time</h2>
-        <p className="game-desc">Tap the instant the lamp glows green. {ROUNDS} rounds — fastest average wins.</p>
-        <div className="reaction-rounds">
-          {Array.from({length:ROUNDS}).map((_,i) => (
-            <div key={i} className={`reaction-round ${i < times.length ? 'done' : i === round ? 'current' : ''}`}>
-              {times[i] ? `${times[i]}` : i+1}
-            </div>
-          ))}
+      <div className="game-wrap" style={{maxWidth: CSIZE + 64}}>
+        <h2 className="game-title">🧞 Magic Carpet Snake</h2>
+        <p className="game-desc">Guide the Genie's carpet to eat ✨ magic stars. Don't hit the walls or your own carpet!</p>
+
+        <div className="snake-score-bar">
+          <div className="snake-stat"><div className="snake-stat-val">✨ {score}</div><div className="snake-stat-label">Stars Eaten</div></div>
+          <div className="snake-stat"><div className="snake-stat-val">⭐ {score>=12?3:score>=5?2:score>=1?1:0}</div><div className="snake-stat-label">Current Stars</div></div>
+          <div className="snake-stat" style={{textAlign:'right'}}><div className="snake-stat-val">{length}</div><div className="snake-stat-label">Length</div></div>
         </div>
-        <div className={`reaction-screen ${screenClass}`} onClick={handleTap}>{screenText}</div>
-        {avg && <p style={{color:'var(--text2)', fontSize:13}}>Running avg: <strong style={{color:'var(--gold)'}}>{avg}ms</strong></p>}
+
+        <div className="snake-wrap" style={{width:CSIZE}}>
+          <canvas ref={canvasRef} width={CSIZE} height={CSIZE} className="snake-canvas" />
+          {status !== 'playing' && (
+            <div className="snake-overlay">
+              {status === 'idle'
+                ? <><div style={{fontSize:52, filter:'drop-shadow(0 0 14px rgba(201,168,76,0.7))'}}>🧞</div>
+                    <div className="snake-overlay-title">The Genie awaits your command</div>
+                    <button className="game-btn" onClick={startGame}>🪔 Begin the Journey</button></>
+                : <><div style={{fontSize:44}}>💫</div>
+                    <div className="snake-overlay-title">The carpet has fallen…</div>
+                    <div style={{fontSize:13, color:'var(--text2)'}}>Stars eaten: {score}</div></>
+              }
+            </div>
+          )}
+        </div>
+
+        <div className="snake-dpad">
+          <button className="dpad-btn" style={{gridArea:'up'}}    onClick={() => changeDir(0,-1)}>↑</button>
+          <button className="dpad-btn" style={{gridArea:'left'}}  onClick={() => changeDir(-1,0)}>←</button>
+          <button className="dpad-btn" style={{gridArea:'right'}} onClick={() => changeDir(1,0)}>→</button>
+          <button className="dpad-btn" style={{gridArea:'down'}}  onClick={() => changeDir(0,1)}>↓</button>
+        </div>
       </div>
-      {completion && <CompletionModal levelId={level.id} stars={completion.stars} scoreLabel={completion.scoreLabel} onClose={restart} />}
+
+      {completion && (
+        <CompletionModal levelId={level.id} stars={completion.stars} scoreLabel={completion.scoreLabel} onClose={restart} />
+      )}
     </>
   );
 }
@@ -999,7 +1168,7 @@ function MemoryGame({ level, onComplete }) {
 
 const REGISTRY = {
   placeholder: PlaceholderGame,
-  reaction:    ReactionGame,
+  snake:       SnakeGame,
   quickmath:   QuickMathGame,
   memory:      MemoryGame,
 };
