@@ -27,7 +27,7 @@ jobs:
 
           echo 'export default { fetch: (req, env) => env.ASSETS.fetch(req) }' > _worker.js
 
-          printf '_worker.js\nwrangler.json\n.github\n' > .assetsignore
+          printf '_worker.js\nwrangler.json\n.github\nnode_modules\n' > .assetsignore
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
