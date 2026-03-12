@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Write wrangler config and worker entry point
+      - name: Write wrangler config, worker, and assetsignore
         run: |
           cat > wrangler.json << 'EOF'
           {
@@ -24,7 +24,10 @@ jobs:
             }
           }
           EOF
+
           echo 'export default { fetch: (req, env) => env.ASSETS.fetch(req) }' > _worker.js
+
+          printf '_worker.js\nwrangler.json\n.github\n' > .assetsignore
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
