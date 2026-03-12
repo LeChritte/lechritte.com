@@ -11,23 +11,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fetch wrangler config from cloudflare branch
+      - name: Write wrangler config and worker entry point
         run: |
-          git fetch origin cloudflare/workers-autoconfig
-          git checkout origin/cloudflare/workers-autoconfig -- wrangler.jsonc
-
-      - name: Create minimal worker entry point
-        run: |
+          cat > wrangler.json << 'EOF'
+          {
+            "name": "lechritte",
+            "main": "_worker.js",
+            "compatibility_date": "2025-09-27",
+            "compatibility_flags": ["nodejs_compat"],
+            "assets": {
+              "directory": "."
+            }
+          }
+          EOF
           echo 'export default { fetch: (req, env) => env.ASSETS.fetch(req) }' > _worker.js
-          node -e "
-            const fs = require('fs');
-            const cfg = JSON.parse(fs.readFileSync('wrangler.jsonc', 'utf8').replace(/\/\/.*/g, ''));
-            cfg.main = '_worker.js';
-            fs.writeFileSync('wrangler.jsonc', JSON.stringify(cfg, null, 2));
-          "
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.72.0"
