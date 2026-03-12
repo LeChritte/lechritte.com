@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rory Bertiglia | RB Tax Advisory</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!--
+  ════════════════════════════════════════════════════════════════
+  FORM SETUP — Formspree (free, no backend required)
+  ════════════════════════════════════════════════════════════════
+  1. Go to https://formspree.io and create a free account
+  2. Click "New Form", name it (e.g. "RB Tax Advisory Intake")
+  3. Copy your form endpoint (looks like: https://formspree.io/f/xyzabcde)
+  4. Replace the action URL in the <form> tag below (~line 550)
+  ════════════════════════════════════════════════════════════════
+  -->
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --navy:        #0d1e3c;
+      --navy2:       #112348;
+      --blue:        #1e40af;
+      --blue2:       #2563eb;
+      --blue3:       #3b82f6;
+      --blue-light:  #eff6ff;
+      --blue-mid:    #dbeafe;
+      --gold:        #b8922a;
+      --gold-light:  #d4a940;
+      --gray-900:    #111827;
+      --gray-700:    #374151;
+      --gray-500:    #6b7280;
+      --gray-400:    #9ca3af;
+      --gray-300:    #d1d5db;
+      --gray-200:    #e5e7eb;
+      --gray-100:    #f3f4f6;
+      --gray-50:     #f9fafb;
+      --white:       #ffffff;
+      --shadow-sm:   0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md:   0 4px 16px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+      --shadow-lg:   0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-blue: 0 8px 30px rgba(37,99,235,0.22);
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; color: var(--gray-900); background: var(--white); -webkit-font-smoothing: antialiased; }
+    h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+    button { font-family: inherit; cursor: pointer; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--navy);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 0 48px;
+      height: 72px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: box-shadow 0.3s;
+    }
+    nav.scrolled { box-shadow: 0 2px 24px rgba(0,0,0,0.3); }
+
+    .nav-brand {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .nav-brand img { filter: brightness(0) invert(1); }
+
+    .nav-links { display: flex; align-items: center; gap: 36px; }
+    .nav-links a {
+      font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.7);
+      letter-spacing: 0.3px; transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta {
+      background: var(--blue2);
+      color: var(--white) !important;
+      padding: 9px 22px; border-radius: 7px;
+      font-weight: 600 !important;
+      transition: background 0.15s, transform 0.1s !important;
+      border: none;
+    }
+    .nav-cta:hover { background: var(--blue3) !important; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(160deg, var(--navy) 0%, var(--navy2) 40%, #152d5e 100%);
+      display: flex; align-items: center;
+      padding: 120px 48px 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 70% 50%, rgba(37,99,235,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(184,146,42,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-grid-bg {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 660px; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(37,99,235,0.18);
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 100px;
+      padding: 6px 16px 6px 8px;
+      margin-bottom: 28px;
+    }
+    .hero-badge-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--blue3);
+      box-shadow: 0 0 8px rgba(59,130,246,0.8);
+    }
+    .hero-badge span { font-size: 12px; font-weight: 600; color: var(--blue3); letter-spacing: 0.5px; }
+
+    .hero h1 {
+      font-size: clamp(36px, 5vw, 58px);
+      font-weight: 700; line-height: 1.12;
+      color: var(--white);
+      margin-bottom: 24px;
+      letter-spacing: -0.5px;
+    }
+    .hero h1 em { font-style: normal; color: var(--blue3); }
+
+    .hero-sub {
+      font-size: 18px; font-weight: 400; line-height: 1.7;
+      color: rgba(255,255,255,0.62);
+      margin-bottom: 40px;
+      max-width: 520px;
+    }
+
+    .hero-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--blue2);
+      color: var(--white);
+      padding: 14px 30px; border-radius: 9px;
+      font-size: 15px; font-weight: 600;
+      border: none;
+      box-shadow: var(--shadow-blue);
+      transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+    }
+    .btn-primary:hover { background: var(--blue3); transform: translateY(-2px); box-shadow: 0 12px 36px rgba(37,99,235,0.3); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent;
+      color: rgba(255,255,255,0.8);
+      padding: 14px 30px; border-radius: 9px;
+      font-size: 15px; font-weight: 500;
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: all 0.15s;
+    }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.5); color: var(--white); background: rgba(255,255,255,0.06); }
+
+    .hero-stats {
+      margin-top: 64px;
+      display: flex; gap: 48px; flex-wrap: wrap;
+    }
+    .hero-stat { display: flex; flex-direction: column; gap: 4px; }
+    .hero-stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px; font-weight: 700; color: var(--white); line-height: 1;
+    }
+    .hero-stat-num span { color: var(--blue3); }
+    .hero-stat-label { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.45); letter-spacing: 0.5px; text-transform: uppercase; }
+
+    /* ── SECTION SHARED ── */
+    .section { padding: 96px 48px; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+
+    .section-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+      color: var(--blue2); margin-bottom: 14px;
+    }
+    .section-label::before {
+      content: ''; display: block;
+      width: 24px; height: 2px; background: var(--blue2); border-radius: 2px;
+    }
+    .section-title {
+      font-size: clamp(28px, 3.5vw, 40px);
+      font-weight: 700; line-height: 1.2; color: var(--navy);
+      margin-bottom: 18px;
+    }
+    .section-sub {
+      font-size: 17px; line-height: 1.7; color: var(--gray-500);
+      max-width: 580px;
+    }
+
+    /* ── ABOUT ── */
+    .about { background: var(--gray-50); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
+    }
+    .about-image-wrap {
+      position: relative;
+    }
+    .about-photo-placeholder {
+      width: 100%; aspect-ratio: 4/5;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      background: linear-gradient(160deg, var(--navy) 0%, #1e3a6e 100%);
+    }
+    .about-photo-placeholder img {
+      width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block;
+    }
+    .about-badge-card {
+      position: absolute; bottom: -20px; right: -20px;
+      background: var(--white);
+      border-radius: 14px;
+      padding: 16px 20px;
+      box-shadow: var(--shadow-lg);
+      display: flex; align-items: center; gap: 14px;
+      min-width: 200px;
+    }
+    .about-badge-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--blue-light);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .about-badge-icon svg { color: var(--blue2); }
+    .about-badge-title { font-size: 13px; font-weight: 700; color: var(--navy); }
+    .about-badge-sub { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+
+    .about-content .section-title { margin-bottom: 20px; }
+    .about-bio {
+      font-size: 16px; line-height: 1.8; color: var(--gray-700);
+      margin-bottom: 16px;
+    }
+    .about-credentials {
+      margin-top: 32px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    }
+    .credential-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 14px 16px;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+    }
+    .credential-check {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--blue-light);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .credential-check svg { width: 11px; height: 11px; color: var(--blue2); }
+    .credential-text { font-size: 13px; font-weight: 500; color: var(--gray-700); line-height: 1.4; }
+
+    /* ── SERVICES ── */
+    .services { background: var(--white); }
+    .services-header { margin-bottom: 56px; }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .service-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 16px;
+      padding: 32px;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--blue2), var(--blue3));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.25s ease;
+    }
+    .service-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--gray-300); }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-icon {
+      width: 52px; height: 52px; border-radius: 12px;
+      background: var(--blue-light);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .service-icon svg { width: 24px; height: 24px; color: var(--blue2); }
+    .service-title { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 12px; line-height: 1.3; }
+    .service-desc { font-size: 14px; line-height: 1.7; color: var(--gray-500); }
+    .service-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 20px; font-size: 13px; font-weight: 600; color: var(--blue2);
+      transition: gap 0.15s;
+    }
+    .service-card:hover .service-link { gap: 8px; }
+
+    /* ── PROCESS ── */
+    .process { background: var(--navy); padding: 96px 48px; }
+    .process .section-title { color: var(--white); }
+    .process .section-label { color: var(--blue3); }
+    .process .section-label::before { background: var(--blue3); }
+    .process .section-sub { color: rgba(255,255,255,0.55); }
+    .process-steps {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 2px; margin-top: 56px;
+      position: relative;
+    }
+    .process-steps::before {
+      content: '';
+      position: absolute; top: 28px; left: 14%; right: 14%;
+      height: 1px; background: rgba(255,255,255,0.12);
+    }
+    .process-step { text-align: center; padding: 0 16px; }
+    .step-num {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(37,99,235,0.18);
+      border: 1px solid rgba(59,130,246,0.35);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; font-weight: 700; color: var(--blue3);
+      position: relative; z-index: 1;
+    }
+    .step-title { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 10px; }
+    .step-desc { font-size: 13px; line-height: 1.65; color: rgba(255,255,255,0.45); }
+
+    /* ── CONTACT ── */
+    .contact { background: var(--gray-50); }
+    .contact-grid {
+      display: grid; grid-template-columns: 1fr 1.6fr;
+      gap: 72px; align-items: start;
+    }
+    .contact-info .section-title { margin-bottom: 16px; }
+    .contact-info .section-sub { margin-bottom: 36px; }
+    .contact-detail {
+      display: flex; align-items: flex-start; gap: 14px;
+      margin-bottom: 24px;
+    }
+    .contact-detail-icon {
+      width: 42px; height: 42px; border-radius: 10px;
+      background: var(--blue-light);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .contact-detail-icon svg { width: 18px; height: 18px; color: var(--blue2); }
+    .contact-detail-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-400); margin-bottom: 4px; }
+    .contact-detail-val { font-size: 15px; font-weight: 500; color: var(--gray-700); }
+    .contact-detail-val a { color: var(--blue2); transition: color 0.15s; }
+    .contact-detail-val a:hover { color: var(--blue3); }
+
+    /* Form */
+    .form-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: var(--shadow-md);
+    }
+    .form-title { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+    .form-sub { font-size: 13px; color: var(--gray-500); margin-bottom: 28px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 7px; }
+    .form-group label span { color: var(--blue2); }
+    .form-control {
+      width: 100%; padding: 11px 14px;
+      border: 1px solid var(--gray-300);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px; color: var(--gray-900);
+      background: var(--white);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+    .form-control:focus { border-color: var(--blue2); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+    .form-control::placeholder { color: var(--gray-400); }
+    select.form-control { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239ca3af' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+    textarea.form-control { resize: vertical; min-height: 100px; }
+
+    .radio-group { display: flex; gap: 16px; margin-top: 4px; }
+    .radio-label {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; color: var(--gray-700); cursor: pointer;
+    }
+    .radio-label input[type="radio"] { accent-color: var(--blue2); width: 16px; height: 16px; cursor: pointer; }
+
+    .form-divider { border: none; border-top: 1px solid var(--gray-200); margin: 6px 0 22px; }
+
+    .btn-submit {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue2) 100%);
+      color: var(--white); border: none; border-radius: 9px;
+      font-size: 15px; font-weight: 600; letter-spacing: 0.2px;
+      box-shadow: var(--shadow-blue);
+      transition: opacity 0.15s, transform 0.12s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-submit:hover { opacity: 0.92; transform: translateY(-1px); }
+    .btn-submit:active { transform: translateY(0); }
+
+    .form-note {
+      text-align: center; margin-top: 14px;
+      font-size: 12px; color: var(--gray-400); line-height: 1.5;
+    }
+    .form-note svg { display: inline; vertical-align: middle; margin-right: 4px; }
+
+    /* Success message */
+    .form-success {
+      display: none;
+      text-align: center; padding: 40px 20px;
+    }
+    .form-success.show { display: block; }
+    .success-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: #dcfce7; margin: 0 auto 16px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .success-icon svg { width: 28px; height: 28px; color: #16a34a; }
+    .success-title { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .success-sub { font-size: 14px; color: var(--gray-500); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      padding: 60px 48px 32px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .footer-grid {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px; margin-bottom: 48px;
+    }
+    .footer-brand .nav-firm-name { font-size: 18px; margin-bottom: 12px; display: block; }
+    .footer-brand .nav-firm-sub { display: block; margin-bottom: 16px; }
+    .footer-tagline { font-size: 13px; line-height: 1.7; color: rgba(255,255,255,0.4); max-width: 280px; }
+    .footer-col-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.35); margin-bottom: 16px; }
+    .footer-link { display: block; font-size: 13px; color: rgba(255,255,255,0.55); margin-bottom: 10px; transition: color 0.15s; }
+    .footer-link:hover { color: var(--white); }
+    .footer-bottom {
+      max-width: 1100px; margin: 0 auto;
+      padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+    .footer-disclaimer { font-size: 11px; color: rgba(255,255,255,0.22); max-width: 480px; text-align: right; line-height: 1.5; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; }
+      .nav-links { gap: 20px; }
+      .hero { padding: 100px 24px 60px; }
+      .section { padding: 72px 24px; }
+      .about-grid { grid-template-columns: 1fr; gap: 48px; }
+      .about-image-wrap { max-width: 380px; margin: 0 auto; }
+      .services-grid { grid-template-columns: 1fr 1fr; }
+      .process-steps { grid-template-columns: 1fr 1fr; }
+      .process-steps::before { display: none; }
+      .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+    }
+    @media (max-width: 620px) {
+      nav { height: 60px; }
+      .nav-links { display: none; }
+      .hero h1 { font-size: 32px; }
+      .hero-stats { gap: 28px; }
+      .services-grid { grid-template-columns: 1fr; }
+      .process-steps { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .about-credentials { grid-template-columns: 1fr; }
+      footer { padding: 48px 24px 24px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+      .footer-disclaimer { text-align: left; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ── -->
+<nav id="navbar">
+  <div class="nav-brand">
+    <img src="logo.png" alt="RB Tax Advisory" style="height:36px; width:auto; display:block;">
+  </div>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#process">Our Process</a>
+    <a href="#contact" class="nav-cta">Get Started</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero" id="home">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      <span>Trusted Tax Advisory Services</span>
+    </div>
+
+    <h1>Strategic Tax Solutions<br>for <em>Individuals</em> &<br>Businesses</h1>
+
+    <p class="hero-sub">
+      Expert guidance to minimize your tax burden, ensure compliance, and position you for long-term financial success. Personalized strategies — not cookie-cutter advice.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">
+        Schedule a Consultation
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#services" class="btn-secondary">
+        View Services
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">15<span>+</span></div>
+        <div class="hero-stat-label">Years of Experience</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">500<span>+</span></div>
+        <div class="hero-stat-label">Clients Served</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">$2M<span>+</span></div>
+        <div class="hero-stat-label">Tax Savings Achieved</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section class="section about" id="about">
+  <div class="section-inner">
+    <div class="about-grid">
+
+      <div class="about-image-wrap">
+        <div class="about-photo-placeholder">
+          <img src="https://media.licdn.com/dms/image/v2/C5603AQGn85iOrsZCEw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1517555850333?e=1775088000&v=beta&t=NoGK7jjJuiigaKrQE7yRTtT884oaOdJr4CinhapJonw" alt="Rory Bertiglia">
+        </div>
+        <div class="about-badge-card">
+          <div class="about-badge-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div class="about-badge-title">IRS Enrolled Agent</div>
+            <div class="about-badge-sub">Licensed to practice before the IRS</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-content">
+        <div class="section-label">About</div>
+        <h2 class="section-title">Meet Rory Bertiglia</h2>
+
+        <p class="about-bio">
+          I'm Rory Bertiglia, founder of RB Tax Advisory. With deep experience in tax planning and advisory services, I founded this firm with one mission: to provide the same level of sophisticated tax strategy previously reserved for large corporations — to individuals, families, and growing businesses of all sizes.
+        </p>
+        <p class="about-bio">
+          My approach goes beyond simply filing returns. I work proactively with each client to understand their full financial picture, anticipate tax implications, and develop forward-looking strategies that create real, measurable savings year after year.
+        </p>
+        <p class="about-bio">
+          Whether you're navigating a complex business transaction, managing multiple income streams, or planning for retirement, you deserve an advisor who is as invested in your financial success as you are.
+        </p>
+
+        <a href="https://www.linkedin.com/in/rory-bertiglia-332b9a4a/" target="_blank" rel="noopener"
+           style="display:inline-flex; align-items:center; gap:8px; margin-top:4px; margin-bottom:8px;
+                  background:#0a66c2; color:white; padding:9px 18px; border-radius:7px;
+                  font-size:13px; font-weight:600; transition:opacity 0.15s; text-decoration:none;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          View LinkedIn Profile
+        </a>
+
+        <div class="about-credentials">
+          <div class="credential-item">
+            <div class="credential-check">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span class="credential-text">IRS Enrolled Agent</span>
+          </div>
+          <div class="credential-item">
+            <div class="credential-check">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span class="credential-text">Certified Tax Planner</span>
+          </div>
+          <div class="credential-item">
+            <div class="credential-check">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span class="credential-text">15+ Years Experience</span>
+          </div>
+          <div class="credential-item">
+            <div class="credential-check">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span class="credential-text">Small Business Specialist</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SERVICES ── -->
+<section class="section services" id="services">
+  <div class="section-inner">
+    <div class="services-header">
+      <div class="section-label">Services</div>
+      <h2 class="section-title">Comprehensive Tax Services</h2>
+      <p class="section-sub">From straightforward filings to complex multi-entity planning, every engagement receives focused, expert attention.</p>
+    </div>
+
+    <div class="services-grid">
+
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <h3 class="service-title">Individual Tax Planning & Preparation</h3>
+        <p class="service-desc">Comprehensive personal tax return preparation with proactive planning strategies to minimize your liability — including W-2, investment income, rental properties, and self-employment.</p>
+        <a href="#contact" class="service-link">
+          Learn more
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <h3 class="service-title">Business Tax Advisory</h3>
+        <p class="service-desc">Strategic tax planning for LLCs, S-Corps, C-Corps, and partnerships. Entity structure optimization, deduction strategies, and ongoing advisory support throughout the year.</p>
+        <a href="#contact" class="service-link">
+          Learn more
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <h3 class="service-title">Tax Compliance & Filing</h3>
+        <p class="service-desc">Accurate and timely preparation of federal, state, and local tax returns. Stay fully compliant while capturing every credit and deduction you're entitled to.</p>
+        <a href="#contact" class="service-link">
+          Learn more
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3 class="service-title">IRS Representation</h3>
+        <p class="service-desc">Expert representation before the IRS during audits, appeals, collections, and penalty abatement proceedings. Protect your rights and resolve tax controversies with confidence.</p>
+        <a href="#contact" class="service-link">
+          Learn more
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h3 class="service-title">Estate & Trust Tax Planning</h3>
+        <p class="service-desc">Thoughtful strategies to preserve wealth across generations. Trust tax return preparation, estate planning coordination, and gift tax planning to protect your legacy.</p>
+        <a href="#contact" class="service-link">
+          Learn more
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <h3 class="service-title">Quarterly Tax Planning</h3>
+        <p class="service-desc">Year-round advisory sessions to review financials, adjust estimated tax payments, and capture planning opportunities before year-end — so you're never caught off guard.</p>
+        <a href="#contact" class="service-link">
+          Learn more
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── PROCESS ── -->
+<section class="process" id="process">
+  <div class="section-inner">
+    <div class="section-label">Our Process</div>
+    <h2 class="section-title">How We Work Together</h2>
+    <p class="section-sub">A clear, structured approach so you always know where you stand and what comes next.</p>
+
+    <div class="process-steps">
+      <div class="process-step">
+        <div class="step-num">01</div>
+        <div class="step-title">Initial Consultation</div>
+        <p class="step-desc">We start with a complimentary call to understand your situation, goals, and current tax picture.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-num">02</div>
+        <div class="step-title">Review & Discovery</div>
+        <p class="step-desc">We gather your documents and conduct a thorough analysis of your current tax position and opportunities.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-num">03</div>
+        <div class="step-title">Strategy Presentation</div>
+        <p class="step-desc">We present a customized tax strategy with clear projections and walk through every recommendation.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-num">04</div>
+        <div class="step-title">Ongoing Partnership</div>
+        <p class="step-desc">We implement, monitor, and refine your plan throughout the year — proactively, not reactively.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section class="section contact" id="contact">
+  <div class="section-inner">
+    <div class="contact-grid">
+
+      <div class="contact-info">
+        <div class="section-label">Get in Touch</div>
+        <h2 class="section-title">Let's Start the Conversation</h2>
+        <p class="section-sub">Tell us about your situation and we'll reach out within one business day to schedule your complimentary consultation.</p>
+
+        <div style="margin-top: 36px;">
+          <div class="contact-detail">
+            <div class="contact-detail-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div>
+              <div class="contact-detail-label">Email</div>
+              <div class="contact-detail-val"><a href="mailto:rbertiglia@rbtaxadvisory.com">rbertiglia@rbtaxadvisory.com</a></div>
+            </div>
+          </div>
+
+          <div class="contact-detail">
+            <div class="contact-detail-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.81a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.02z"/></svg>
+            </div>
+            <div>
+              <div class="contact-detail-label">Phone</div>
+              <div class="contact-detail-val">(555) 000-0000</div>
+            </div>
+          </div>
+
+          <div class="contact-detail">
+            <div class="contact-detail-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div>
+              <div class="contact-detail-label">Response Time</div>
+              <div class="contact-detail-val">Within 1 business day</div>
+            </div>
+          </div>
+
+          <div class="contact-detail">
+            <div class="contact-detail-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <div>
+              <div class="contact-detail-label">Initial Consultation</div>
+              <div class="contact-detail-val">Complimentary • 30 minutes</div>
+            </div>
+          </div>
+
+          <div class="contact-detail">
+            <div class="contact-detail-icon" style="background:#e8f0fb;">
+              <svg viewBox="0 0 24 24" fill="#0a66c2" width="18" height="18"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </div>
+            <div>
+              <div class="contact-detail-label">LinkedIn</div>
+              <div class="contact-detail-val"><a href="https://www.linkedin.com/in/rory-bertiglia-332b9a4a/" target="_blank" rel="noopener">Rory Bertiglia</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTAKE FORM -->
+      <!-- ACTION: Replace "YOUR_FORM_ENDPOINT" with your Formspree URL (e.g. https://formspree.io/f/xyzabcde) -->
+      <div class="form-card">
+        <div id="form-container">
+          <h3 class="form-title">Client Intake Form</h3>
+          <p class="form-sub">Please fill out the fields below. All information is kept strictly confidential.</p>
+
+          <form id="intake-form" action="https://formspree.io/f/YOUR_FORM_ENDPOINT" method="POST">
+            <input type="hidden" name="_subject" value="New Client Inquiry — RB Tax Advisory">
+            <input type="hidden" name="_replyto" value="">
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>First Name <span>*</span></label>
+                <input type="text" name="first_name" class="form-control" placeholder="Jane" required>
+              </div>
+              <div class="form-group">
+                <label>Last Name <span>*</span></label>
+                <input type="text" name="last_name" class="form-control" placeholder="Smith" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Email Address <span>*</span></label>
+                <input type="email" name="email" class="form-control" placeholder="jane@example.com" required>
+              </div>
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" name="phone" class="form-control" placeholder="(555) 123-4567">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Client Type <span>*</span></label>
+              <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="client_type" value="Individual" required> Individual / Family</label>
+                <label class="radio-label"><input type="radio" name="client_type" value="Business"> Business / Self-Employed</label>
+                <label class="radio-label"><input type="radio" name="client_type" value="Both"> Both</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Service(s) Needed <span>*</span></label>
+              <select name="service" class="form-control" required>
+                <option value="" disabled selected>Select a service…</option>
+                <option>Individual Tax Planning & Preparation</option>
+                <option>Business Tax Advisory</option>
+                <option>Tax Compliance & Filing</option>
+                <option>IRS Representation / Audit Support</option>
+                <option>Estate & Trust Tax Planning</option>
+                <option>Quarterly Tax Planning</option>
+                <option>Not sure — need guidance</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Approximate Annual Income</label>
+              <select name="income_range" class="form-control">
+                <option value="" disabled selected>Select a range…</option>
+                <option>Under $75,000</option>
+                <option>$75,000 – $150,000</option>
+                <option>$150,000 – $300,000</option>
+                <option>$300,000 – $500,000</option>
+                <option>$500,000 – $1,000,000</option>
+                <option>Over $1,000,000</option>
+                <option>Prefer not to say</option>
+              </select>
+            </div>
+
+            <hr class="form-divider">
+
+            <div class="form-group">
+              <label>Briefly Describe Your Situation <span>*</span></label>
+              <textarea name="message" class="form-control" required
+                placeholder="Tell us about your current tax situation, any concerns, and what you're hoping to achieve. The more context you provide, the better prepared we'll be for your consultation."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Best Time to Reach You</label>
+              <select name="best_time" class="form-control">
+                <option value="" disabled selected>Select a preference…</option>
+                <option>Morning (8am – 12pm)</option>
+                <option>Afternoon (12pm – 5pm)</option>
+                <option>Evening (5pm – 7pm)</option>
+                <option>Any time</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn-submit">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Submit Intake Form
+            </button>
+
+            <p class="form-note">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Your information is encrypted and kept strictly confidential. We never share your data.
+            </p>
+          </form>
+        </div>
+
+        <div class="form-success" id="form-success">
+          <div class="success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h3 class="success-title">Thank You!</h3>
+          <p class="success-sub">Your intake form has been received. We'll be in touch within one business day to schedule your complimentary consultation.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="logo.png" alt="RB Tax Advisory" style="height:32px; width:auto; display:block; margin-bottom:14px; filter:brightness(0) invert(1);">
+      <p class="footer-tagline">Strategic tax solutions for individuals, families, and businesses. Personalized guidance you can trust.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Services</div>
+      <a href="#services" class="footer-link">Individual Tax Planning</a>
+      <a href="#services" class="footer-link">Business Tax Advisory</a>
+      <a href="#services" class="footer-link">Tax Compliance</a>
+      <a href="#services" class="footer-link">IRS Representation</a>
+      <a href="#services" class="footer-link">Estate & Trust Planning</a>
+    </div>
+    <div>
+      <div class="footer-col-title">Firm</div>
+      <a href="#about" class="footer-link">About</a>
+      <a href="#process" class="footer-link">Our Process</a>
+      <a href="#contact" class="footer-link">Contact</a>
+      <a href="#contact" class="footer-link">Get Started</a>
+    </div>
+    <div>
+      <div class="footer-col-title">Contact</div>
+      <a href="mailto:rbertiglia@rbtaxadvisory.com" class="footer-link">rbertiglia@rbtaxadvisory.com</a>
+      <a href="tel:5550000000" class="footer-link">(555) 000-0000</a>
+      <a href="https://www.linkedin.com/in/rory-bertiglia-332b9a4a/" target="_blank" rel="noopener" class="footer-link" style="display:flex; align-items:center; gap:6px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 RB Tax Advisory. All rights reserved.</div>
+    <div class="footer-disclaimer">This website is for informational purposes only and does not constitute legal or tax advice. Consult a qualified tax professional regarding your specific circumstances.</div>
+  </div>
+</footer>
+
+<script>
+  // Sticky nav shadow
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // Form submission — works with Formspree
+  const form = document.getElementById('intake-form');
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = form.querySelector('.btn-submit');
+    btn.textContent = 'Submitting…';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (res.ok) {
+        document.getElementById('form-container').style.display = 'none';
+        document.getElementById('form-success').classList.add('show');
+      } else {
+        btn.textContent = 'Submit Intake Form';
+        btn.disabled = false;
+        alert('There was an issue submitting the form. Please try emailing us directly at rbertiglia@rbtaxadvisory.com');
+      }
+    } catch {
+      btn.textContent = 'Submit Intake Form';
+      btn.disabled = false;
+      alert('Network error. Please email us directly at rbertiglia@rbtaxadvisory.com');
+    }
+  });
+</script>
+</body>
+</html>
