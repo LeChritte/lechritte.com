@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fantasy Trash Talker — lechritte.com</title>
+  <meta property="og:title" content="Fantasy Trash Talker — Team Dankie Motas is a Disaster">
+  <meta property="og:description" content="3 IL players. Week 1. Need I say more?">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --red: #e8002d;
+      --red-dark: #a80020;
+      --silver: #c0c0c0;
+      --silver-light: #e8e8e8;
+      --black: #0a0a0a;
+      --dark: #111111;
+      --dark2: #1a1a1a;
+      --dark3: #222222;
+      --white: #f5f5f5;
+      --green: #00c853;
+      --amber: #ff8f00;
+    }
+
+    body {
+      background-color: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+    }
+
+    .topbar {
+      height: 6px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--red) 0px, var(--red) 40px,
+        var(--white) 40px, var(--white) 50px,
+        var(--black) 50px, var(--black) 90px,
+        var(--white) 90px, var(--white) 100px
+      );
+    }
+
+    /* ── BREAKING NEWS TICKER ── */
+    .ticker-bar {
+      background: var(--red);
+      display: flex;
+      align-items: center;
+      height: 36px;
+      overflow: hidden;
+    }
+
+    .ticker-badge {
+      background: var(--black);
+      color: var(--red);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 2px;
+      padding: 0 16px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      animation: blink-badge 1s step-start infinite;
+    }
+
+    @keyframes blink-badge { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+    .ticker-track { overflow: hidden; flex: 1; }
+
+    .ticker-inner {
+      display: inline-block;
+      white-space: nowrap;
+      animation: scroll-ticker 55s linear infinite;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #fff;
+      padding-left: 100vw;
+    }
+
+    @keyframes scroll-ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--dark);
+      border-bottom: 3px solid var(--red);
+      padding: 24px 40px;
+      text-align: center;
+      position: relative;
+    }
+
+    .back-link {
+      position: absolute;
+      left: 40px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--silver);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .back-link:hover { color: var(--red); }
+
+    .header-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--silver);
+      margin-bottom: 8px;
+    }
+
+    .header-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 68px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      line-height: 1;
+    }
+    .header-title em { color: var(--red); font-style: normal; }
+
+    .header-sub {
+      font-size: 12px;
+      color: var(--silver);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+
+    .stripe { height: 3px; background: linear-gradient(90deg, var(--red), var(--red-dark), transparent); }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+    .grid { display: grid; grid-template-columns: 320px 1fr; gap: 24px; margin-bottom: 24px; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--dark2);
+      border: 1px solid #2a2a2a;
+      border-top: 3px solid var(--red);
+      margin-bottom: 20px;
+    }
+
+    .card-header {
+      padding: 10px 16px;
+      background: var(--dark3);
+      border-bottom: 1px solid #2a2a2a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-header h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--silver-light);
+    }
+
+    .dot { width: 6px; height: 6px; background: var(--red); border-radius: 50%; flex-shrink: 0; }
+
+    .card-body { padding: 16px; }
+
+    /* ── PHOTO CAROUSEL ── */
+    .photo-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      overflow: hidden;
+      background: var(--dark3);
+    }
+
+    .photo-slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity .6s ease;
+    }
+    .photo-slide.active { opacity: 1; }
+
+    .photo-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,.75));
+      padding: 20px 12px 8px;
+      pointer-events: none;
+    }
+
+    .wanted-stamp {
+      position: absolute;
+      top: 12px; right: 12px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: var(--red);
+      border: 3px solid var(--red);
+      padding: 2px 10px;
+      transform: rotate(8deg);
+      opacity: .85;
+      text-transform: uppercase;
+    }
+
+    .photo-nav {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      padding: 10px 0 8px;
+    }
+
+    .nav-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #444;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .nav-dot.active { background: var(--red); }
+
+    .profile-meta {
+      padding: 12px 16px;
+      background: var(--dark3);
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .profile-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 3px;
+    }
+
+    .profile-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--white);
+    }
+
+    .profile-detail { font-size: 11px; color: var(--silver); margin-top: 2px; }
+
+    /* ── STAT ROWS ── */
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid #2a2a2a;
+      font-size: 12px;
+    }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-label { color: var(--silver); text-transform: uppercase; letter-spacing: 1px; font-size: 10px; font-weight: 500; }
+    .stat-value { color: var(--white); }
+    .stat-value.bad { color: var(--red); font-weight: 600; }
+    .stat-value.warn { color: var(--amber); font-weight: 600; }
+    .stat-value.good { color: var(--green); font-weight: 600; }
+
+    /* ── IL ALERT ── */
+    .il-alert {
+      background: rgba(232,0,45,.08);
+      border: 1px solid rgba(232,0,45,.3);
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .il-alert-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      color: var(--red);
+      letter-spacing: .5px;
+    }
+
+    /* ── ROSTER TABLE ── */
+    .roster-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+
+    .roster-table th {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--silver);
+      padding: 6px 8px;
+      text-align: left;
+      border-bottom: 1px solid #333;
+    }
+
+    .roster-table td { padding: 6px 8px; border-bottom: 1px solid #1e1e1e; vertical-align: middle; }
+    .roster-table tr:last-child td { border-bottom: none; }
+    .roster-table tr:hover td { background: rgba(255,255,255,.02); }
+
+    .section-divider td {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--silver);
+      padding: 10px 8px 4px;
+      border-bottom: none;
+    }
+
+    .slot {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: var(--dark3);
+      padding: 2px 7px;
+      color: var(--silver);
+      white-space: nowrap;
+    }
+    .slot.il-slot { background: var(--red); color: #fff; }
+
+    .player-name { color: var(--white); }
+    .player-team { color: var(--silver); font-size: 10px; }
+
+    .result {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      padding: 2px 7px;
+      white-space: nowrap;
+    }
+    .result.w { background: rgba(0,200,83,.12); color: var(--green); }
+    .result.l { background: rgba(232,0,45,.12); color: var(--red); }
+    .result.ip { background: rgba(255,143,0,.12); color: var(--amber); }
+    .result.il { background: rgba(232,0,45,.2); color: var(--red); }
+
+    /* ── ROAST GENERATOR ── */
+    .roast-card {
+      background: var(--dark2);
+      border: 1px solid #2a2a2a;
+      border-top: 3px solid var(--red);
+    }
+
+    .roast-top {
+      padding: 10px 20px;
+      background: var(--dark3);
+      border-bottom: 1px solid #2a2a2a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .roast-top h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--silver-light);
+    }
+    .roast-top .badge {
+      margin-left: auto;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--silver);
+      text-transform: uppercase;
+    }
+
+    .roast-controls {
+      padding: 20px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .form-group { flex: 1; min-width: 200px; }
+
+    .form-label {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--silver);
+      margin-bottom: 8px;
+    }
+
+    .form-select {
+      width: 100%;
+      background: var(--dark3);
+      border: 1px solid #333;
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-size: 13px;
+      padding: 10px 12px;
+      appearance: none;
+      cursor: pointer;
+      transition: border-color .2s;
+    }
+    .form-select:focus { outline: none; border-color: var(--red); }
+
+    .record-group { min-width: 0; flex: 0 0 auto; }
+    .record-inputs { display: flex; gap: 6px; align-items: center; }
+
+    .record-input {
+      width: 56px;
+      background: var(--dark3);
+      border: 1px solid #333;
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      padding: 7px 4px;
+      transition: border-color .2s;
+    }
+    .record-input:focus { outline: none; border-color: var(--red); }
+    .record-dash { font-size: 22px; font-weight: 700; color: var(--silver); }
+
+    .roast-btn {
+      flex-shrink: 0;
+      background: var(--red);
+      color: var(--white);
+      border: none;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 12px 28px;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+    .roast-btn:hover:not(:disabled) { background: var(--red-dark); }
+    .roast-btn:active:not(:disabled) { transform: scale(.97); }
+    .roast-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
+
+    .share-btn {
+      flex-shrink: 0;
+      background: transparent;
+      border: 1px solid #444;
+      color: var(--silver);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 12px 18px;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+    }
+    .share-btn:hover { border-color: var(--red); color: var(--red); }
+
+    /* Loading */
+    .loading {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding: 24px 20px;
+      border-top: 1px solid #2a2a2a;
+    }
+    .loading.visible { display: flex; }
+
+    .ld { width: 8px; height: 8px; background: var(--red); border-radius: 50%; animation: ld 1.4s ease-in-out infinite; }
+    .ld:nth-child(2) { animation-delay: .2s; }
+    .ld:nth-child(3) { animation-delay: .4s; }
+    @keyframes ld { 0%,80%,100%{transform:scale(.7);opacity:.4} 40%{transform:scale(1.2);opacity:1} }
+
+    .loading-msg {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--silver);
+    }
+
+    /* Roast output */
+    .roast-output {
+      display: none;
+      padding: 24px 20px;
+      border-top: 1px solid #2a2a2a;
+    }
+    .roast-output.visible { display: block; }
+
+    .roast-speaker {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .roast-speaker::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #2a2a2a;
+    }
+
+    .roast-text {
+      font-size: 15px;
+      color: var(--white);
+      line-height: 1.9;
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      margin-top: 16px;
+      background: transparent;
+      border: 1px solid #333;
+      color: var(--silver);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+    }
+    .copy-btn:hover { border-color: var(--silver); color: var(--white); }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid #2a2a2a;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #444;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    footer a { color: var(--silver); text-decoration: none; font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; }
+    footer a:hover { color: var(--red); }
+    footer span { color: var(--red); }
+
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+      .header-title { font-size: 42px; }
+      .back-link { display: none; }
+      .roast-controls { flex-direction: column; align-items: stretch; }
+      .roast-btn, .share-btn { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar"></div>
+
+<!-- Breaking ticker -->
+<div class="ticker-bar">
+  <div class="ticker-badge">🔴 BREAKING</div>
+  <div class="ticker-track">
+    <div class="ticker-inner">
+      ⚠️ WEEK 1 CRISIS: Team "Dankie Motas" in complete meltdown &nbsp;&nbsp;·&nbsp;&nbsp; 💀 THREE players on IL before Week 1 even ends: Seiya Suzuki (IL10) · Ryan Pepiot (IL15) · Nick Lodolo (IL15) &nbsp;&nbsp;·&nbsp;&nbsp; 📊 TODAY'S CARNAGE: Pete Alonso L 2-8 · Ronald Acuña Jr L 5-6 · Yordan Alvarez L 10-12 · Dominic Canzone L 7-8 · Luis Arraez L 2-5 · Logan Webb L 2-5 · Lance McCullers L 10-12 · Eric Lauer L 0-3 · Maikel Garcia L 5-8 &nbsp;&nbsp;·&nbsp;&nbsp; 🤔 CONFIRMED: The team is called "Dankie Motas" and nobody knows what that means — including the manager &nbsp;&nbsp;·&nbsp;&nbsp; 💀 DEVELOPING: McCullers Jr. "feeling healthy" — experts give it 2 more weeks &nbsp;&nbsp;·&nbsp;&nbsp; 😭 SOURCES SAY: Manager actually believes Eric Lauer is a fantasy-relevant pitcher &nbsp;&nbsp;·&nbsp;&nbsp; 🚨 UPDATE: JJ Wetherholt confused why he's playing for a team called Dankie Motas &nbsp;&nbsp;·&nbsp;&nbsp;
+    </div>
+  </div>
+</div>
+
+<header>
+  <a href="/" class="back-link">← lechritte.com</a>
+  <div class="header-eyebrow">lechritte.com presents</div>
+  <div class="header-title">Fantasy <em>Trash</em> Talker</div>
+  <div class="header-sub">2026 Season &nbsp;·&nbsp; ESPN Fantasy Baseball &nbsp;·&nbsp; 10-Team League</div>
+</header>
+<div class="stripe"></div>
+
+<div class="container">
+
+  <div class="grid">
+
+    <!-- ── LEFT: SUSPECT PROFILE ── -->
+    <div>
+      <div class="card" style="border:1px solid #2a2a2a;border-top:3px solid var(--red);margin-bottom:20px;">
+        <div class="photo-frame">
+          <img src="images/opponent-1.jpg" class="photo-slide active" alt="Suspect">
+          <img src="images/opponent-2.jpg" class="photo-slide" alt="Suspect">
+          <img src="images/opponent-3.jpg" class="photo-slide" alt="Suspect">
+          <img src="images/opponent-4.jpg" class="photo-slide" alt="Suspect">
+          <img src="images/opponent-5.jpg" class="photo-slide" alt="Suspect">
+          <div class="wanted-stamp">SUSPECT</div>
+          <div class="photo-overlay">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;color:var(--red);text-transform:uppercase;">Hall of Shame · File #001 · 2026</div>
+          </div>
+        </div>
+        <div class="photo-nav" id="photo-nav">
+          <div class="nav-dot active" data-idx="0"></div>
+          <div class="nav-dot" data-idx="1"></div>
+          <div class="nav-dot" data-idx="2"></div>
+          <div class="nav-dot" data-idx="3"></div>
+          <div class="nav-dot" data-idx="4"></div>
+        </div>
+        <div class="profile-meta">
+          <div class="profile-label">The Accused</div>
+          <div class="profile-name">Manager of Team Dankie Motas</div>
+          <div class="profile-detail">ESPN Fantasy Baseball · 10-Team League · 2026 Season</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="dot"></div><h2>Evidence File</h2></div>
+        <div class="card-body">
+          <div class="stat-row">
+            <span class="stat-label">Team Name</span>
+            <span class="stat-value warn">Dankie Motas 🤨</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Week 1 Record</span>
+            <span class="stat-value bad" id="record-display">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Players on IL</span>
+            <span class="stat-value bad">3 in Week 1 💀</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">April 5 Losses</span>
+            <span class="stat-value bad">9 games lost</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Embarrassment Level</span>
+            <span class="stat-value bad">⚠️ CRITICAL</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Drafted McCullers Jr.</span>
+            <span class="stat-value bad">Yes. They really did.</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Eric Lauer — SP1</span>
+            <span class="stat-value bad">L 0-3. Checks out.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT: ROSTER ── -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <div class="dot"></div>
+          <h2>Roster — April 5, 2026</h2>
+          <div style="margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;color:var(--red);">3 ON IL ☠️</div>
+        </div>
+        <div class="card-body" style="padding:12px 16px;">
+
+          <div class="il-alert">
+            <span style="font-size:20px;flex-shrink:0;">🚨</span>
+            <span class="il-alert-text">INJURY REPORT: Seiya Suzuki (IL10) · Ryan Pepiot (IL15) · Nick Lodolo (IL15) — all IL in Week 1</span>
+          </div>
+
+          <table class="roster-table">
+            <thead>
+              <tr>
+                <th>Slot</th>
+                <th>Player</th>
+                <th>Team</th>
+                <th>Apr 5</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="section-divider"><td colspan="4">Batters</td></tr>
+              <tr>
+                <td><span class="slot">C</span></td>
+                <td><div class="player-name">Liam Hicks</div><div class="player-team">MIA · C, 1B, DH</div></td>
+                <td><div class="player-team">MIA</div></td>
+                <td><span class="result w">W 7-6</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">1B</span></td>
+                <td><div class="player-name">Pete Alonso</div><div class="player-team">BAL · 1B</div></td>
+                <td><div class="player-team">BAL</div></td>
+                <td><span class="result l">L 2-8</span></td>
+              </tr>
+              <tr style="background:rgba(232,0,45,.04);">
+                <td><span class="slot">2B</span></td>
+                <td>
+                  <div class="player-name">JJ Wetherholt</div>
+                  <div class="player-team">STL · SS, 2B</div>
+                </td>
+                <td><div class="player-team">STL</div></td>
+                <td><span class="result ip">Mid 5th</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">3B</span></td>
+                <td><div class="player-name">Maikel Garcia</div><div class="player-team">KC · 3B</div></td>
+                <td><div class="player-team">KC</div></td>
+                <td><span class="result l">L 5-8</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">SS</span></td>
+                <td><div class="player-name">Bo Bichette</div><div class="player-team">NYM · SS</div></td>
+                <td><div class="player-team">NYM</div></td>
+                <td><span class="result w">W 5-2</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">OF</span></td>
+                <td><div class="player-name">Ronald Acuña Jr.</div><div class="player-team">ATL · OF</div></td>
+                <td><div class="player-team">ATL</div></td>
+                <td><span class="result l">L 5-6</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">OF</span></td>
+                <td><div class="player-name">Yordan Alvarez</div><div class="player-team">HOU · DH, OF</div></td>
+                <td><div class="player-team">HOU</div></td>
+                <td><span class="result l">L 10-12</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">OF</span></td>
+                <td><div class="player-name">Dominic Canzone</div><div class="player-team">SEA · OF</div></td>
+                <td><div class="player-team">SEA</div></td>
+                <td><span class="result l">L 7-8</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">UTIL</span></td>
+                <td><div class="player-name">Luis Arraez</div><div class="player-team">SF · 1B, DH</div></td>
+                <td><div class="player-team">SF</div></td>
+                <td><span class="result l">L 2-5</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">UTIL</span></td>
+                <td><div class="player-name">Michael Busch</div><div class="player-team">CHC · 1B</div></td>
+                <td><div class="player-team">CHC</div></td>
+                <td><span class="result w">W 1-0</span></td>
+              </tr>
+              <tr style="opacity:.6;">
+                <td><span class="slot il-slot">IL</span></td>
+                <td><div class="player-name">Seiya Suzuki</div><div class="player-team">CHC · DH, OF</div></td>
+                <td><div class="player-team">CHC</div></td>
+                <td><span class="result il">IL10 ☠️</span></td>
+              </tr>
+
+              <tr class="section-divider"><td colspan="4">Pitchers</td></tr>
+              <tr>
+                <td><span class="slot">P</span></td>
+                <td><div class="player-name">Pete Fairbanks</div><div class="player-team">MIA · RP</div></td>
+                <td><div class="player-team">MIA</div></td>
+                <td><span class="result w">W 7-6</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">SP</span></td>
+                <td><div class="player-name">Logan Webb</div><div class="player-team">SF · SP</div></td>
+                <td><div class="player-team">SF</div></td>
+                <td><span class="result l">L 2-5</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">SP</span></td>
+                <td><div class="player-name">Edward Cabrera</div><div class="player-team">CHC · SP</div></td>
+                <td><div class="player-team">CHC</div></td>
+                <td><span class="result w">W 1-0</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">SP</span></td>
+                <td><div class="player-name">Lance McCullers Jr.</div><div class="player-team">HOU · SP</div></td>
+                <td><div class="player-team">HOU</div></td>
+                <td><span class="result l">L 10-12</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">SP</span></td>
+                <td><div class="player-name">Eric Lauer</div><div class="player-team">TOR · SP, RP</div></td>
+                <td><div class="player-team">TOR</div></td>
+                <td><span class="result l">L 0-3</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">RP</span></td>
+                <td><div class="player-name">Cade Smith</div><div class="player-team">CLE · RP</div></td>
+                <td><div class="player-team">CLE</div></td>
+                <td><span class="result w">W 6-5</span></td>
+              </tr>
+
+              <tr class="section-divider"><td colspan="4">Bench / IL</td></tr>
+              <tr>
+                <td><span class="slot">BN</span></td>
+                <td><div class="player-name">Jesus Luzardo</div><div class="player-team">PHI · SP</div></td>
+                <td><div class="player-team">PHI</div></td>
+                <td><span class="result l">L 1-4</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">BN</span></td>
+                <td><div class="player-name">MacKenzie Gore</div><div class="player-team">TEX · SP</div></td>
+                <td><div class="player-team">TEX</div></td>
+                <td><span class="result l">L 1-2</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">BN</span></td>
+                <td><div class="player-name">Gavin Williams</div><div class="player-team">CLE · SP</div></td>
+                <td><div class="player-team">CLE</div></td>
+                <td><span class="result l">L 0-1</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">BN</span></td>
+                <td><div class="player-name">Bubba Chandler</div><div class="player-team">PIT · SP</div></td>
+                <td><div class="player-team">PIT</div></td>
+                <td><span class="result w">W 8-2</span></td>
+              </tr>
+              <tr>
+                <td><span class="slot">BN</span></td>
+                <td><div class="player-name">Andrew Painter</div><div class="player-team">PHI · SP</div></td>
+                <td><div class="player-team">PHI</div></td>
+                <td><span class="result l">L 1-4</span></td>
+              </tr>
+              <tr style="opacity:.6;">
+                <td><span class="slot il-slot">IL</span></td>
+                <td><div class="player-name">Ryan Pepiot</div><div class="player-team">TB · SP</div></td>
+                <td><div class="player-team">TB</div></td>
+                <td><span class="result il">IL15 ☠️</span></td>
+              </tr>
+              <tr style="opacity:.6;">
+                <td><span class="slot il-slot">IL</span></td>
+                <td><div class="player-name">Nick Lodolo</div><div class="player-team">CIN · SP</div></td>
+                <td><div class="player-team">CIN</div></td>
+                <td><span class="result il">IL15 ☠️</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /grid -->
+
+  <!-- ── DRAFT AUTOPSY ── -->
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-header">
+      <div class="dot"></div>
+      <h2>Draft Autopsy — 2026 Season</h2>
+      <div style="margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;color:var(--red);">3 of 21 picks already on IL ☠️</div>
+    </div>
+    <div class="card-body" style="padding:12px 16px;">
+      <div class="il-alert" style="margin-bottom:16px;">
+        <span style="font-size:20px;flex-shrink:0;">🔬</span>
+        <span class="il-alert-text">Post-draft analysis: Used Round 5 on a closer · Drafted 9 pitchers · 3 of those pitchers are already on IL · No catcher until Round 16</span>
+      </div>
+      <table class="roster-table">
+        <thead>
+          <tr>
+            <th>Rnd</th>
+            <th>Pick</th>
+            <th>Player</th>
+            <th>Pos</th>
+            <th>Verdict</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">1</td>
+            <td style="color:var(--silver);font-size:11px;">9</td>
+            <td><div class="player-name">Ronald Acuña Jr.</div><div class="player-team">ATL · RF</div></td>
+            <td><span class="slot">OF</span></td>
+            <td><span class="result w">✓ Good pick</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">2</td>
+            <td style="color:var(--silver);font-size:11px;">12</td>
+            <td><div class="player-name">Logan Webb</div><div class="player-team">SF · SP</div></td>
+            <td><span class="slot">SP</span></td>
+            <td><span class="result w">✓ Solid</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">3</td>
+            <td style="color:var(--silver);font-size:11px;">29</td>
+            <td><div class="player-name">Jesus Luzardo</div><div class="player-team">PHI · SP</div></td>
+            <td><span class="slot">SP</span></td>
+            <td><span class="result ip">⚠ Risky</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">4</td>
+            <td style="color:var(--silver);font-size:11px;">32</td>
+            <td><div class="player-name">Yordan Alvarez</div><div class="player-team">HOU · DH</div></td>
+            <td><span class="slot">DH</span></td>
+            <td><span class="result w">✓ Elite</span></td>
+          </tr>
+          <tr style="background:rgba(255,143,0,.04);">
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">5</td>
+            <td style="color:var(--silver);font-size:11px;">49</td>
+            <td><div class="player-name">Cade Smith</div><div class="player-team">CLE · RP</div></td>
+            <td><span class="slot">RP</span></td>
+            <td><span class="result ip">🤨 Closer in R5??</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">6</td>
+            <td style="color:var(--silver);font-size:11px;">52</td>
+            <td><div class="player-name">Maikel Garcia</div><div class="player-team">KC · 3B</div></td>
+            <td><span class="slot">3B</span></td>
+            <td><span class="result ip">⚠ Questionable</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">7</td>
+            <td style="color:var(--silver);font-size:11px;">69</td>
+            <td><div class="player-name">Pete Alonso</div><div class="player-team">BAL · 1B</div></td>
+            <td><span class="slot">1B</span></td>
+            <td><span class="result w">✓ OK</span></td>
+          </tr>
+          <tr style="background:rgba(232,0,45,.05);">
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">8</td>
+            <td style="color:var(--silver);font-size:11px;">72</td>
+            <td><div class="player-name" style="opacity:.7;">Ryan Pepiot</div><div class="player-team">TB · SP</div></td>
+            <td><span class="slot il-slot">IL</span></td>
+            <td><span class="result il">☠ IL15 Week 1</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">9</td>
+            <td style="color:var(--silver);font-size:11px;">89</td>
+            <td><div class="player-name">Bo Bichette</div><div class="player-team">NYM · SS</div></td>
+            <td><span class="slot">SS</span></td>
+            <td><span class="result w">✓ Fine</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">10</td>
+            <td style="color:var(--silver);font-size:11px;">92</td>
+            <td><div class="player-name">MacKenzie Gore</div><div class="player-team">TEX · SP</div></td>
+            <td><span class="slot">SP</span></td>
+            <td><span class="result ip">⚠ Risky</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">11</td>
+            <td style="color:var(--silver);font-size:11px;">109</td>
+            <td><div class="player-name">Luis Arraez</div><div class="player-team">SF · 1B</div></td>
+            <td><span class="slot">UTIL</span></td>
+            <td><span class="result ip">⚠ 0 HR guy</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">12</td>
+            <td style="color:var(--silver);font-size:11px;">112</td>
+            <td><div class="player-name">Gavin Williams</div><div class="player-team">CLE · SP</div></td>
+            <td><span class="slot">SP</span></td>
+            <td><span class="result ip">⚠ Arm risk</span></td>
+          </tr>
+          <tr style="background:rgba(232,0,45,.05);">
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">13</td>
+            <td style="color:var(--silver);font-size:11px;">129</td>
+            <td><div class="player-name" style="opacity:.7;">Seiya Suzuki</div><div class="player-team">CHC · DH</div></td>
+            <td><span class="slot il-slot">IL</span></td>
+            <td><span class="result il">☠ IL10 Week 1</span></td>
+          </tr>
+          <tr style="background:rgba(232,0,45,.05);">
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">14</td>
+            <td style="color:var(--silver);font-size:11px;">132</td>
+            <td><div class="player-name" style="opacity:.7;">Nick Lodolo</div><div class="player-team">CIN · SP</div></td>
+            <td><span class="slot il-slot">IL</span></td>
+            <td><span class="result il">☠ IL15 Week 1</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">15</td>
+            <td style="color:var(--silver);font-size:11px;">149</td>
+            <td><div class="player-name">Michael Busch</div><div class="player-team">CHC · 1B</div></td>
+            <td><span class="slot">UTIL</span></td>
+            <td><span class="result w">✓ Fine</span></td>
+          </tr>
+          <tr style="background:rgba(255,143,0,.03);">
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">16</td>
+            <td style="color:var(--silver);font-size:11px;">152</td>
+            <td><div class="player-name">Hunter Goodman</div><div class="player-team">COL · C</div></td>
+            <td><span class="slot">C</span></td>
+            <td><span class="result ip">⚠ First C in R16</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">17</td>
+            <td style="color:var(--silver);font-size:11px;">169</td>
+            <td><div class="player-name">Bubba Chandler</div><div class="player-team">PIT · SP</div></td>
+            <td><span class="slot">SP</span></td>
+            <td><span class="result ip">⚠ Speculative</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">18</td>
+            <td style="color:var(--silver);font-size:11px;">172</td>
+            <td><div class="player-name">Edward Cabrera</div><div class="player-team">CHC · SP</div></td>
+            <td><span class="slot">SP</span></td>
+            <td><span class="result ip">⚠ Speculative</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">19</td>
+            <td style="color:var(--silver);font-size:11px;">189</td>
+            <td><div class="player-name">Carlos Estevez</div><div class="player-team">KC · RP</div></td>
+            <td><span class="slot">RP</span></td>
+            <td><span class="result ip">🤨 2nd closer taken</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">20</td>
+            <td style="color:var(--silver);font-size:11px;">192</td>
+            <td><div class="player-name">Bryson Stott</div><div class="player-team">PHI · 2B</div></td>
+            <td><span class="slot">2B</span></td>
+            <td><span class="result w">✓ Late value</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--silver);">21</td>
+            <td style="color:var(--silver);font-size:11px;">209</td>
+            <td><div class="player-name">Shane Smith</div><div class="player-team">CHW · SP</div></td>
+            <td><span class="slot">SP</span></td>
+            <td><span class="result l">✗ White Sox SP lol</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── ROAST GENERATOR ── -->
+  <div class="roast-card">
+    <div class="roast-top">
+      <div class="dot"></div>
+      <h2>Roast Generator — AI Powered</h2>
+      <div class="badge">Choose a player · Generate roast · Send to opponent</div>
+    </div>
+
+    <div class="roast-controls">
+      <div class="form-group">
+        <label class="form-label" for="roaster-select">Who's Roasting?</label>
+        <select class="form-select" id="roaster-select">
+          <option value="alonso">🐻‍❄️  Pete Alonso — "The Polar Bear" (1B, BAL)</option>
+          <option value="wetherholt">🤔  JJ Wetherholt — The Actual Team Namesake (2B, STL)</option>
+          <option value="acuna">⚡  Ronald Acuña Jr. — El Abusador (OF, ATL)</option>
+          <option value="mccullers">🤕  Lance McCullers Jr. — (SP, HOU — Probably About to Get Hurt)</option>
+          <option value="webb">🌉  Logan Webb — SF Giants Ace (SP, SF)</option>
+          <option value="alvarez">💪  Yordan Alvarez — La Máquina (DH/OF, HOU)</option>
+        </select>
+      </div>
+
+      <div class="form-group record-group">
+        <label class="form-label">Current W–L Record</label>
+        <div class="record-inputs">
+          <input type="number" class="record-input" id="wins" min="0" max="30" value="0" title="Wins">
+          <span class="record-dash">–</span>
+          <input type="number" class="record-input" id="losses" min="0" max="30" value="1" title="Losses">
+        </div>
+      </div>
+
+      <button class="roast-btn" id="roast-btn" onclick="generateRoast()">🔥 Roast 'Em</button>
+      <button class="share-btn" onclick="shareLink()">📤 Share</button>
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="ld"></div><div class="ld"></div><div class="ld"></div>
+      <div class="loading-msg">Loading roast… your opponent has no idea what's coming</div>
+    </div>
+
+    <div class="roast-output" id="roast-output">
+      <div class="roast-speaker" id="roast-speaker"></div>
+      <div class="roast-text" id="roast-text"></div>
+      <button class="copy-btn" onclick="copyRoast()">Copy Roast</button>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  <a href="/">← lechritte.com</a>
+  <span>Fantasy Trash Talker · 2026 Season</span>
+</footer>
+
+<script>
+  // ── Photo carousel ──
+  const slides = Array.from(document.querySelectorAll('.photo-slide'));
+  const dots   = Array.from(document.querySelectorAll('.nav-dot'));
+  let cur = 0, timer;
+
+  function showSlide(n) {
+    slides[cur].classList.remove('active');
+    dots[cur].classList.remove('active');
+    cur = ((n % slides.length) + slides.length) % slides.length;
+    slides[cur].classList.add('active');
+    dots[cur].classList.add('active');
+  }
+
+  dots.forEach(d => d.addEventListener('click', () => {
+    clearInterval(timer);
+    showSlide(+d.dataset.idx);
+    timer = setInterval(() => showSlide(cur + 1), 4500);
+  }));
+
+  timer = setInterval(() => showSlide(cur + 1), 4500);
+
+  // ── Update record display when inputs change ──
+  function updateRecord() {
+    const w = +document.getElementById('wins').value || 0;
+    const l = +document.getElementById('losses').value || 0;
+    document.getElementById('record-display').textContent = `${w}–${l}`;
+  }
+  document.getElementById('wins').addEventListener('input', updateRecord);
+  document.getElementById('losses').addEventListener('input', updateRecord);
+  updateRecord();
+
+  // ── Roaster profiles ──
+  const ROASTERS = {
+    alonso: {
+      name: 'Pete Alonso',
+      title: '"The Polar Bear" — 1B, BAL',
+      description: 'Pete Alonso, "The Polar Bear," the massive power-hitting first baseman playing for the Baltimore Orioles. You have a huge personality — loud, blue-collar, passionate, beloved by fans. You are on a fantasy team called "Dankie Motas" and you have no idea what that means or why you should be okay with it. You are FURIOUS. You lost 2-8 to Pittsburgh today and the manager still thinks they built a winning squad. Roast the manager hard — the team name is embarrassing, half the pitching staff is on the IL already in Week 1, they started Eric Lauer (ERIC LAUER) as a starter, and their roster dropped 9 games today. You are done. You are The Polar Bear. This is beneath you.'
+    },
+    wetherholt: {
+      name: 'JJ Wetherholt',
+      title: '2B, STL — Confused but Here',
+      description: 'JJ Wetherholt, the young Cardinals second baseman from West Virginia. You are a quiet, hard-working rookie who just wants to play baseball. You found out you are on a fantasy team called "Dankie Motas" and you have absolutely no idea what that means. You are being asked to roast the manager of this team — a person who (1) named their team something incomprehensible, (2) drafted three pitchers now on the IL in Week 1, (3) started Eric Lauer as a fantasy SP, and (4) watched their players lose 9 games today. You roast them in a confused, polite, but increasingly frustrated way. You are just trying to make it in the big leagues and this is not helping.'
+    },
+    acuna: {
+      name: 'Ronald Acuña Jr.',
+      title: '"El Abusador" — OF, ATL',
+      description: 'Ronald Acuña Jr., "El Abusador," the Atlanta Braves superstar outfielder — one of the best players on the planet. You are a total alpha. You came back strong from injury and you are absolutely NOT okay with being on a fantasy team called "Dankie Motas." You do not know what Dankie Motas means. Nobody does. Roast this manager with swagger and style — reference the 9 losses today, the 3 IL players in week 1 (did they check injury reports exactly zero times?), the fact that they started Eric Lauer, and the name "Dankie Motas" which sounds like something you order at a drive-through at 2am. Mix in some Spanish for flavor.'
+    },
+    mccullers: {
+      name: 'Lance McCullers Jr.',
+      title: 'SP, HOU — (Already Worried)',
+      description: 'Lance McCullers Jr., the Houston Astros starting pitcher who is extremely talented but has spent a shocking amount of time on the injured list over the past several years. You roast this manager with self-aware dark humor — you KNOW you are injury-prone, you KNOW you are a risky fantasy pick, and you are SHOCKED that anyone in 2026 still drafts you with confidence. Roast them for their blind faith in you, for having Ryan Pepiot (IL15) and Nick Lodolo (IL15) on the staff too — that is THREE pitchers on the IL in Week 1 — for starting Eric Lauer (a man who is barely on a roster in real life), and for naming the team "Dankie Motas," which sounds like a medical condition. It is almost impressive how wrong every single decision is.'
+    },
+    webb: {
+      name: 'Logan Webb',
+      title: 'SF Giants Ace — SP, SF',
+      description: 'Logan Webb, the San Francisco Giants ace — a ground-ball machine, the workhorse of the Giants rotation, and a legitimate top-tier fantasy SP. You just gave up runs to the Mets today (L 2-5) and you are already in a dark mood. Now you find out your fantasy team is called "Dankie Motas." You do not even know where to start. Roast the manager for surrounding you with a pitching staff in complete shambles — McCullers got bombed, Eric Lauer did what Eric Lauer does, and three pitchers are somehow already on the IL. You are Logan Webb. You deserve better than "Dankie Motas."'
+    },
+    alvarez: {
+      name: 'Yordan Alvarez',
+      title: '"La Máquina" — DH/OF, HOU',
+      description: 'Yordan Alvarez, "La Máquina," the Houston Astros feared designated hitter — enormous, terrifying, a machine of destruction. You lost 10-12 to the Athletics today and you are not in the mood. You roast the manager in a quiet, measured, deeply disappointed way — like a disappointed father who expected so much more. Roast them for wasting your elite fantasy value on a team called "Dankie Motas" (what is a Dankie Mota?), for the pitching staff being historically bad with 3 IL players in Week 1, for McCullers getting rocked, for Eric Lauer existing on this roster, and for the overall organizational chaos of this team. You are La Máquina. You do not belong on Dankie Motas.'
+    }
+  };
+
+  const DRAFT_NOTES = 'Draft sins: Used Round 5 pick on closer Cade Smith (way too early for a closer). Drafted 9 pitchers total. Round 8 pick Ryan Pepiot is on IL15. Round 13 pick Seiya Suzuki is on IL10. Round 14 pick Nick Lodolo is on IL15. Waited until Round 16 for a catcher. Drafted two closers (Cade Smith R5, Carlos Estevez R19). Last pick was Shane Smith from the White Sox — a pitcher on the worst team in baseball.';
+  const ROSTER = 'Pete Alonso (1B, BAL — Round 7 pick), JJ Wetherholt (2B, STL — waiver pickup), Maikel Garcia (3B, KC — Round 6 pick), Bo Bichette (SS, NYM — Round 9 pick), Ronald Acuña Jr. (OF, ATL — Round 1 pick #9), Yordan Alvarez (DH/OF, HOU — Round 4 pick), Dominic Canzone (OF, SEA — waiver pickup), Luis Arraez (UTIL, SF — Round 11 pick, zero power), Michael Busch (UTIL, CHC — Round 15 pick), Liam Hicks (C, MIA — waiver pickup), Seiya Suzuki (IL10, CHC — Round 13 pick NOW ON IL), Pete Fairbanks (RP, MIA — waiver pickup), Logan Webb (SP, SF — Round 2 pick), Edward Cabrera (SP, CHC — Round 18 pick), Lance McCullers Jr. (SP, HOU — waiver pickup, notorious injury risk), Eric Lauer (SP, TOR — waiver pickup, barely MLB-roster relevant), Cade Smith (RP, CLE — Round 5 pick on a CLOSER), Ryan Pepiot (IL15, TB — Round 8 pick NOW ON IL), Nick Lodolo (IL15, CIN — Round 14 pick NOW ON IL)';
+
+  async function generateRoast() {
+    const key = document.getElementById('roaster-select').value;
+    const wins = document.getElementById('wins').value;
+    const losses = document.getElementById('losses').value;
+    const roaster = ROASTERS[key];
+
+    const btn = document.getElementById('roast-btn');
+    const loading = document.getElementById('loading');
+    const output = document.getElementById('roast-output');
+
+    btn.disabled = true;
+    loading.classList.add('visible');
+    output.classList.remove('visible');
+
+    try {
+      const res = await fetch('/api/roast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          roaster: { name: roaster.name, description: roaster.description },
+          roster: ROSTER,
+          record: `${wins}–${losses}`,
+          draftNotes: DRAFT_NOTES
+        })
+      });
+
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      loading.classList.remove('visible');
+      output.classList.add('visible');
+
+      document.getElementById('roast-speaker').textContent = `${roaster.name} — ${roaster.title}`;
+
+      // Typewriter
+      const el = document.getElementById('roast-text');
+      el.textContent = '';
+      const text = data.roast;
+      let i = 0;
+      (function type() {
+        if (i < text.length) { el.textContent += text[i++]; setTimeout(type, 16); }
+      })();
+
+    } catch (err) {
+      loading.classList.remove('visible');
+      output.classList.add('visible');
+      document.getElementById('roast-speaker').textContent = 'Error';
+      document.getElementById('roast-text').textContent =
+        `Could not generate roast: ${err.message}\n\nMake sure ANTHROPIC_API_KEY is set in Cloudflare Workers settings.`;
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function shareLink() {
+    const url = window.location.href;
+    if (navigator.share) {
+      navigator.share({ title: 'Fantasy Trash Talker — lechritte.com', url });
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = document.querySelector('.share-btn');
+        const orig = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => btn.textContent = orig, 2000);
+      });
+    }
+  }
+
+  function copyRoast() {
+    const text = document.getElementById('roast-text').textContent;
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      const orig = btn.textContent;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => btn.textContent = orig, 2000);
+    });
+  }
+</script>
+
+</body>
+</html>

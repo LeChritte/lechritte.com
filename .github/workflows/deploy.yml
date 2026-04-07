@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Write wrangler config, worker, and assetsignore
+      - name: Write wrangler config and assetsignore
         run: |
           cat > wrangler.json << 'EOF'
           {
@@ -24,8 +24,6 @@ jobs:
             }
           }
           EOF
-
-          echo 'export default { fetch: (req, env) => env.ASSETS.fetch(req) }' > _worker.js
 
           printf '_worker.js\nwrangler.json\n.github\nnode_modules\n' > .assetsignore
 
